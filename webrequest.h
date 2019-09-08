@@ -25,6 +25,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 
+#include <QSharedDataPointer>
+
 class QNetworkRequest;
 class QNetworkReply;
 
@@ -35,8 +37,7 @@ class WebRequest : public QObject
 {
     Q_OBJECT
 
-    WebRequestPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(WebRequest)
+    QExplicitlySharedDataPointer<WebRequestPrivate> d;
 
     Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged STORED false)
     Q_PROPERTY(bool isBusy READ isBusy WRITE setIsBusy NOTIFY isBusyChanged STORED false)

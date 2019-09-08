@@ -34,7 +34,7 @@ signals:
     void finished(QJsonObject data);
 
 protected:
-    void processResponse(QByteArray buffer) Q_DECL_OVERRIDE;
+    void processResponse(QByteArray buffer) override;
 };
 
 #endif // JSONREQUEST_H

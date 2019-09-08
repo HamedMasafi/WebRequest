@@ -22,15 +22,15 @@
 
 #include "webrequest.h"
 
+#include <QSharedData>
+
 class QNetworkAccessManager;
 
 class WebRequest;
-class WebRequestPrivate {
-    WebRequest *q_ptr;
-    Q_DECLARE_PUBLIC(WebRequest)
+class WebRequestPrivate : public QSharedData {
 
 public:
-    WebRequestPrivate(WebRequest *parent);
+    WebRequestPrivate();
 
 //    QNetworkAccessManager *net;
     int calls;

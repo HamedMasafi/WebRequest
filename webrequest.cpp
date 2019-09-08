@@ -33,39 +33,31 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
-WebRequestPrivate::WebRequestPrivate(WebRequest *parent) : q_ptr(parent),
+WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
     m_useCache(true), m_data(QVariantMap()), m_includeDataInCacheId(false),
     m_actualCacheId(QString()), m_expirationSeconds(0),
     m_method(WebRequest::Post), useUtf8(true)
 {
-//    net = new QNetworkAccessManager(parent);
-//    net->setObjectName("net");
 }
 
 WebRequest::WebRequest(QObject *parent)
-    : QObject(parent), d_ptr(new WebRequestPrivate(this))
+    : QObject(parent), d(new WebRequestPrivate)
 {
-//    Q_D(WebRequest);
-//    connect(d->net, &QNetworkAccessManager::finished, this, &WebRequest::on_net_finished);
-
     setManager(WebRequestManager::instance());
     setCacheManager(WebRequestCache::instance());
 }
 
 WebRequest::~WebRequest()
 {
-    Q_D(WebRequest);
-
     if (d->calls)
         for (int i = 0; i < d->calls; ++i)
             manager()->removeCall(this);
-    delete d;
 }
 
 void WebRequest::sendToServer(QVariantMap props, bool cache)
 {
-    Q_D(WebRequest);
+
     QByteArray postData = "";
     QUrlQuery queryData;
     beforeSend(props);
@@ -175,7 +167,6 @@ void WebRequest::sendToServer(QVariantMap props, bool cache)
 
 void WebRequest::send(bool cache)
 {
-    Q_D(WebRequest);
     if (d->m_data != QVariantMap()) {
         sendToServer(d->m_data);
         return;
@@ -200,91 +191,90 @@ void WebRequest::sendSync(bool cache)
 
 QUrl WebRequest::url() const
 {
-    Q_D(const WebRequest);
     return d->m_url;
 }
 
 bool WebRequest::isBusy() const
 {
-    Q_D(const WebRequest);
+
     return d->m_isBusy;
 }
 
 QString WebRequest::cacheId() const
 {
-    Q_D(const WebRequest);
+
     return d->m_cacheId;
 }
 
 bool WebRequest::useCache() const
 {
-    Q_D(const WebRequest);
+
     return d->m_useCache;
 }
 
 QVariantMap WebRequest::data() const
 {
-    Q_D(const WebRequest);
+
     return d->m_data;
 }
 
 bool WebRequest::includeDataInCacheId() const
 {
-    Q_D(const WebRequest);
+
     return d->m_includeDataInCacheId;
 }
 
 WebRequest::Method WebRequest::method() const
 {
-    Q_D(const WebRequest);
+
     return d->m_method;
 }
 
 WebRequestManager *WebRequest::manager() const
 {
-    Q_D(const WebRequest);
+
     return d->m_manager;
 }
 
 WebRequestCache *WebRequest::cacheManager() const
 {
-    Q_D(const WebRequest);
+
     return d->m_cacheManager;
 }
 
 bool WebRequest::cacheUsed() const
 {
-    Q_D(const WebRequest);
+
     return d->m_cacheUsed;
 }
 
 qint64 WebRequest::expirationSeconds() const
 {
-    Q_D(const WebRequest);
+
     return d->m_expirationSeconds;
 }
 
 QString WebRequest::loadingText() const
 {
-    Q_D(const WebRequest);
+
     return d->loadingText;
 }
 
 bool WebRequest::useUtf8() const
 {
-    Q_D(const WebRequest);
+
     return d->useUtf8;
 }
 
 void WebRequest::addFile(const QString &name, const QString &path)
 {
-    Q_D(WebRequest);
+
     d->files.insert(name, path);
 }
 
 void WebRequest::addData(const QString &name, const QVariant &value)
 {
-    Q_D(WebRequest);
+
     d->m_data.insert(name, value);
 }
 
@@ -315,7 +305,7 @@ void WebRequest::storeInCache(QDateTime expire, QByteArray buffer)
 
 bool WebRequest::retriveFromCache(const QString &key)
 {
-    Q_D(WebRequest);
+
 
     if (d->useUtf8) {
         QTextCodec *codec = QTextCodec::codecForName("UTF-8");
@@ -336,13 +326,13 @@ bool WebRequest::retriveFromCache(const QString &key)
 
 QString WebRequest::actualCacheId() const
 {
-    Q_D(const WebRequest);
+
     return d->m_actualCacheId;
 }
 
 QString WebRequest::generateCacheId(QVariantMap props)
 {
-    Q_D(WebRequest);
+
 
     QString postData = "";
     if (props.count()) {
@@ -369,7 +359,7 @@ QString WebRequest::generateCacheId(QVariantMap props)
 
 void WebRequest::finished()
 {
-    Q_D(WebRequest);
+
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
@@ -414,7 +404,7 @@ void WebRequest::finished()
 
 void WebRequest::setUrl(QUrl url)
 {
-    Q_D(WebRequest);
+
     if (d->m_url == url)
         return;
 
@@ -424,7 +414,7 @@ void WebRequest::setUrl(QUrl url)
 
 void WebRequest::setIsBusy(bool isBusy)
 {
-    Q_D(WebRequest);
+
     if (d->m_isBusy == isBusy)
         return;
 
@@ -434,7 +424,7 @@ void WebRequest::setIsBusy(bool isBusy)
 
 void WebRequest::setCacheId(QString cacheId)
 {
-    Q_D(WebRequest);
+
     if (d->m_cacheId == cacheId)
         return;
 
@@ -445,7 +435,7 @@ void WebRequest::setCacheId(QString cacheId)
 
 void WebRequest::setUseCache(bool useCache)
 {
-    Q_D(WebRequest);
+
     if (d->m_useCache == useCache)
         return;
 
@@ -455,7 +445,7 @@ void WebRequest::setUseCache(bool useCache)
 
 void WebRequest::setData(QVariantMap data)
 {
-    Q_D(WebRequest);
+
     if (d->m_data == data)
         return;
 
@@ -466,7 +456,7 @@ void WebRequest::setData(QVariantMap data)
 
 void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
 {
-    Q_D(WebRequest);
+
     if (d->m_includeDataInCacheId == includeDataInCacheId)
         return;
 
@@ -477,7 +467,7 @@ void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
 
 void WebRequest::setMethod(WebRequest::Method method)
 {
-    Q_D(WebRequest);
+
     if (d->m_method == method)
         return;
 
@@ -487,7 +477,7 @@ void WebRequest::setMethod(WebRequest::Method method)
 
 void WebRequest::setManager(WebRequestManager *manager)
 {
-    Q_D(WebRequest);
+
     if (d->m_manager == manager)
         return;
 
@@ -497,7 +487,7 @@ void WebRequest::setManager(WebRequestManager *manager)
 
 void WebRequest::setCacheManager(WebRequestCache *cacheManager)
 {
-    Q_D(WebRequest);
+
     if (d->m_cacheManager == cacheManager)
         return;
 
@@ -507,7 +497,7 @@ void WebRequest::setCacheManager(WebRequestCache *cacheManager)
 
 void WebRequest::setExpirationSeconds(qint64 expirationSeconds)
 {
-    Q_D(WebRequest);
+
     if (d->m_expirationSeconds == expirationSeconds)
         return;
 
@@ -517,7 +507,7 @@ void WebRequest::setExpirationSeconds(qint64 expirationSeconds)
 
 void WebRequest::setLoadingText(QString loadingText)
 {
-    Q_D(WebRequest);
+
     if (d->loadingText == loadingText)
         return;
 
@@ -527,7 +517,7 @@ void WebRequest::setLoadingText(QString loadingText)
 
 void WebRequest::setUseUtf8(bool useUtf8)
 {
-    Q_D(WebRequest);
+
     if (d->useUtf8 == useUtf8)
         return;
 
@@ -537,7 +527,7 @@ void WebRequest::setUseUtf8(bool useUtf8)
 
 void WebRequest::setCacheUsed(bool cacheUsed)
 {
-    Q_D(WebRequest);
+
     if (d->m_cacheUsed == cacheUsed)
         return;
 
