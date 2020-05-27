@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Get.qml</file>
+        <file>Post.qml</file>
+        <file>ImageRequest.qml</file>
+        <file>FileUpload.qml</file>
+    </qresource>
+</RCC>

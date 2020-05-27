@@ -26,13 +26,15 @@
 
 class QNetworkAccessManager;
 
+class AbstractData;
+class AbstractResponse;
 class WebRequest;
-class WebRequestPrivate : public QSharedData {
+class WebRequestPrivate : public QSharedData
+{
 
 public:
     WebRequestPrivate();
 
-//    QNetworkAccessManager *net;
     int calls;
     QUrl m_url;
     bool m_isBusy;
@@ -49,6 +51,9 @@ public:
     WebRequestCache *m_cacheManager;
     QMap<QString, QString> files;
     bool useUtf8;
+    QVariantMap headers;
+    AbstractData *postData;
+    AbstractResponse *response;
 };
 
 #endif // WEBREQUEST_P_H

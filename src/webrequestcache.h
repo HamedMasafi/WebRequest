@@ -32,6 +32,8 @@
 class WebRequestCache : public QObject {
     Q_OBJECT
 
+    Q_PROPERTY(bool databaseEnabled READ databaseEnabled)
+
     static WebRequestCache *_instance;
 #ifdef QT_SQL_LIB
     QSqlDatabase db;
@@ -59,6 +61,8 @@ public:
     void printError() const;
     int clean();
     void clear();
+
+    bool databaseEnabled() const;
 
 protected:
     void timerEvent(QTimerEvent *);

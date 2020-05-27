@@ -110,6 +110,15 @@ void WebRequestCache::clear()
 #endif
 }
 
+bool WebRequestCache::databaseEnabled() const
+{
+#ifdef QT_SQL_LIB
+    return true;
+#else
+    return false;
+#endif
+}
+
 QString WebRequestCache::generateFileName(const int &id) const
 {
     return path + "/" FILE_PERFIX + QString::number(id);
@@ -245,7 +254,7 @@ QString WebRequestCache::setValue(const QString &key, const QByteArray &value, c
     q.bindValue(":expire", expire.toString());
     q.exec();
 
-    if (q.lastInsertId().isNull()) {
+    if (!id && q.lastInsertId().isNull()) {
         printError();
         return QString();
     }

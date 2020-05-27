@@ -19,6 +19,7 @@
 
 #include "imagerequest.h"
 #include "webrequestcache.h"
+#include "webrequest_p.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
@@ -55,14 +56,14 @@ void ImageRequest::processResponse(QByteArray buffer)
         emit replyError(-1, "Image is null");
 }
 
-void ImageRequest::storeInCache(QDateTime expire, QByteArray buffer)
-{
-    QString cid = actualCacheId();
-    if (cid.isEmpty())
-        cid = url().toString().replace("'", "");
-    QString fn = cacheManager()->setValue(cid, buffer, expire);
-    setFileName(QUrl::fromLocalFile(fn));
-}
+//void ImageRequest::storeInCache(QDateTime expire, QByteArray buffer)
+//{
+//    QString cid = actualCacheId();
+//    if (cid.isEmpty())
+//        cid = url().toString().replace("'", "");
+//    QString fn = cacheManager()->setValue(cid, buffer, expire);
+//    setFileName(QUrl::fromLocalFile(fn));
+//}
 
 bool ImageRequest::retriveFromCache(const QString &key)
 {

@@ -22,6 +22,9 @@
 #include "webrequestcache.h"
 #include "webrequestmanager.h"
 
+#include "response/abstractresponse.h"
+#include "data/abstractdata.h"
+
 #include <QEventLoop>
 #include <QFile>
 #include <QTextCodec>
@@ -37,7 +40,8 @@ WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
     m_useCache(true), m_data(QVariantMap()), m_includeDataInCacheId(false),
     m_actualCacheId(QString()), m_expirationSeconds(0),
-    m_method(WebRequest::Post), useUtf8(true)
+    m_method(WebRequest::Post), useUtf8(true),
+    postData(nullptr), response(nullptr)
 {
 }
 
@@ -85,12 +89,27 @@ void WebRequest::sendToServer(QVariantMap props, bool cache)
     QNetworkRequest request;
     manager()->addCall(this);
     setIsBusy(true);
+    request.setUrl(d->m_url);
+
+
+    if (d->headers.count())
+        for (auto i = d->headers.begin(); i != d->headers.end(); ++i)
+            request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
+
+    QNetworkReply *r;
+    if (d->postData) {
+        r = d->postData->send(request);
+    } else {
+        r = manager()->request(request);
+    }
+    connect(r, &QNetworkReply::finished, this, &WebRequest::finished);
+
+    return;
 
     if (!d->files.count())
         request.setHeader(QNetworkRequest::ContentTypeHeader,
                           "application/x-www-form-urlencoded");
 
-    request.setUrl(d->m_url);
     beforeSend(request);
 /*
     QByteArray postData = "";
@@ -212,12 +231,6 @@ bool WebRequest::useCache() const
     return d->m_useCache;
 }
 
-QVariantMap WebRequest::data() const
-{
-
-    return d->m_data;
-}
-
 bool WebRequest::includeDataInCacheId() const
 {
 
@@ -266,16 +279,19 @@ bool WebRequest::useUtf8() const
     return d->useUtf8;
 }
 
-void WebRequest::addFile(const QString &name, const QString &path)
+QVariantMap WebRequest::headers() const
 {
-
-    d->files.insert(name, path);
+    return d->headers;
 }
 
-void WebRequest::addData(const QString &name, const QVariant &value)
+AbstractData *WebRequest::postData() const
 {
+    return d->postData;
+}
 
-    d->m_data.insert(name, value);
+AbstractResponse *WebRequest::response() const
+{
+    return d->response;
 }
 
 void WebRequest::beforeSend(QVariantMap &map)
@@ -293,14 +309,16 @@ void WebRequest::processResponse(QByteArray buffer)
     rawDataRecived(buffer);
 }
 
-void WebRequest::storeInCache(QDateTime expire, QByteArray buffer)
+void WebRequest::storeInCache(QDateTime expire, QByteArray &buffer)
 {
     QString cid = cacheId();
     if (cid.isEmpty())
         cid = url().toString().replace("'", "");
-    bool ok = cacheManager()->setValue(cid, QString(buffer), expire);
-    if (!ok)
-        qWarning() << "Unable to store cache";
+    if (d->response->storeCacheAsFile()) {
+        buffer = cacheManager()->setValue(cid, buffer, expire).toUtf8();
+    } else {
+        cacheManager()->setValue(cid, QString(buffer), expire);
+    }
 }
 
 bool WebRequest::retriveFromCache(const QString &key)
@@ -359,16 +377,22 @@ QString WebRequest::generateCacheId(QVariantMap props)
 
 void WebRequest::finished()
 {
+    qDebug() << Q_FUNC_INFO;
+    if (!d->response)
+        return;
 
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     auto rawBuffer = reply->readAll();
+
+
     auto buffer = codec->toUnicode(rawBuffer);
-    qDebug() << "buffer is" << buffer;
+
     if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "Error" << reply->error() << reply->errorString();
-        qWarning() << buffer;
+        if (d->response)
+            emit d->response->error(reply->error(), reply->errorString());
+
         emit replyError(reply->error(), reply->errorString());
         manager()->removeCall(this);
         return;
@@ -387,11 +411,12 @@ void WebRequest::finished()
                 expire = expire.addSecs(m.captured(1).toInt());
             }
         }
-        if (d->useUtf8)
-            storeInCache(expire, buffer.toUtf8());
-        else
-            storeInCache(expire, rawBuffer);
+//        if (d->useUtf8)
+//            storeInCache(expire, buffer.toUtf8());
+//        else
+        storeInCache(expire, rawBuffer);
     }
+    d->response->processReply(rawBuffer);
     if (d->useUtf8)
         processResponse(buffer.toUtf8());
     else
@@ -441,17 +466,6 @@ void WebRequest::setUseCache(bool useCache)
 
     d->m_useCache = useCache;
     emit useCacheChanged(d->m_useCache);
-}
-
-void WebRequest::setData(QVariantMap data)
-{
-
-    if (d->m_data == data)
-        return;
-
-    d->m_actualCacheId = "";
-    d->m_data = data;
-    emit dataChanged(d->m_data);
 }
 
 void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
@@ -523,6 +537,35 @@ void WebRequest::setUseUtf8(bool useUtf8)
 
     d->useUtf8 = useUtf8;
     emit useUtf8Changed(d->useUtf8);
+}
+
+void WebRequest::setHeaders(QVariantMap headers)
+{
+    if (d->headers == headers)
+        return;
+
+    d->headers = headers;
+    emit headersChanged(headers);
+}
+
+void WebRequest::setPostData(AbstractData *postData)
+{
+    if (d->postData == postData)
+        return;
+
+    postData->setD(d);
+    d->postData = postData;
+    emit postDataChanged(postData);
+}
+
+void WebRequest::setResponse(AbstractResponse *response)
+{
+    if (d->response == response)
+        return;
+
+    response->setD(d);
+    d->response = response;
+    emit responseChanged(response);
 }
 
 void WebRequest::setCacheUsed(bool cacheUsed)

@@ -17,37 +17,27 @@
  *
  */
 
-#ifndef IMAGEREQUEST_H
-#define IMAGEREQUEST_H
+#ifndef KAJMODULE_H
+#define KAJMODULE_H
 
-#include "webrequest.h"
+#include <QtCore/qglobal.h>
+#include <QQmlExtensionPlugin>
 
-#include <QtCore/QObject>
-#include <QtGui/QImage>
+#define KAJ_VERSION_MAJOR 1
+#define KAJ_VERSION_MINOR 0
 
-class ImageRequest : public WebRequest
+class QQmlEngine;
+class KajModule : public QQmlExtensionPlugin
 {
     Q_OBJECT
-    Q_PROPERTY(QUrl fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
-
-    QUrl m_fileName;
+    Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 
 public:
-    explicit ImageRequest(QObject *parent = nullptr);
-    QUrl fileName() const;
+    void registerTypes(const char *uri);
 
-public slots:
-    void setFileName(QUrl fileName);
-
-signals:
-    void finished(QImage data);
-    void fileNameChanged(QUrl fileName);
-
-protected:
-    void processResponse(QByteArray buffer) override;
-    void storeInCache(QDateTime expire, QByteArray buffer) override;
-    bool retriveFromCache(const QString &key) override;
-    void beforeSend(QNetworkRequest &request) override;
+    void initializeEngine(QQmlEngine *engine, const char *uri);
 };
 
-#endif // IMAGEREQUEST_H
+
+
+#endif // KAJMODULE_H

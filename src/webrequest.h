@@ -33,6 +33,8 @@ class QNetworkReply;
 class WebRequestPrivate;
 class WebRequestManager;
 class WebRequestCache;
+class AbstractData;
+class AbstractResponse;
 class WebRequest : public QObject
 {
     Q_OBJECT
@@ -43,15 +45,17 @@ class WebRequest : public QObject
     Q_PROPERTY(bool isBusy READ isBusy WRITE setIsBusy NOTIFY isBusyChanged STORED false)
     Q_PROPERTY(QString cacheId READ cacheId WRITE setCacheId NOTIFY cacheIdChanged STORED false)
     Q_PROPERTY(bool useCache READ useCache WRITE setUseCache NOTIFY useCacheChanged STORED false)
-    Q_PROPERTY(QVariantMap data READ data WRITE setData NOTIFY dataChanged)
-    Q_PROPERTY(bool includeDataInCacheId READ includeDataInCacheId WRITE setIncludeDataInCacheId NOTIFY includeDataInCacheIdChanged)
-    Q_PROPERTY(Method method READ method WRITE setMethod NOTIFY methodChanged)
-    Q_PROPERTY(WebRequestManager* manager READ manager WRITE setManager NOTIFY managerChanged)
-    Q_PROPERTY(WebRequestCache* cacheManager READ cacheManager WRITE setCacheManager NOTIFY cacheManagerChanged)
-    Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged)
-    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged)
-    Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged)
-    Q_PROPERTY(bool useUtf8 READ useUtf8 WRITE setUseUtf8 NOTIFY useUtf8Changed)
+    Q_PROPERTY(bool includeDataInCacheId READ includeDataInCacheId WRITE setIncludeDataInCacheId NOTIFY includeDataInCacheIdChanged STORED false)
+    Q_PROPERTY(Method method READ method WRITE setMethod NOTIFY methodChanged STORED false)
+    Q_PROPERTY(WebRequestManager* manager READ manager WRITE setManager NOTIFY managerChanged STORED false)
+    Q_PROPERTY(WebRequestCache* cacheManager READ cacheManager WRITE setCacheManager NOTIFY cacheManagerChanged STORED false)
+    Q_PROPERTY(AbstractData* postData READ postData WRITE setPostData NOTIFY postDataChanged)
+    Q_PROPERTY(AbstractResponse* response READ response WRITE setResponse NOTIFY responseChanged)
+    Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged STORED false)
+    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
+    Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged STORED false)
+    Q_PROPERTY(bool useUtf8 READ useUtf8 WRITE setUseUtf8 NOTIFY useUtf8Changed STORED false)
+    Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
 
 public:
     enum Method {
@@ -60,6 +64,12 @@ public:
     };
     Q_ENUMS(Method)
 
+    enum ContentType {
+        Json,
+        UrlEncoded
+    };
+    Q_ENUMS(ContentType)
+
     explicit WebRequest(QObject *parent = nullptr);
     ~WebRequest();
 
@@ -67,7 +77,6 @@ public:
     bool isBusy() const;
     QString cacheId() const;
     bool useCache() const;
-    QVariantMap data() const;
     bool includeDataInCacheId() const;
     Method method() const;
     WebRequestManager *manager() const;
@@ -77,16 +86,18 @@ public:
     QString loadingText() const;
     bool useUtf8() const;
 
-    void addFile(const QString &name, const QString &path);
-    void addData(const QString &name, const QVariant &value);
+    QVariantMap headers() const;
 
+    AbstractData* postData() const;
+
+    AbstractResponse *response() const;
 
 protected:
     void sendToServer(QVariantMap props = QMap<QString, QVariant>(), bool cache = true);
     virtual void processResponse(QByteArray buffer);
     virtual void beforeSend(QVariantMap &map);
     virtual void beforeSend(QNetworkRequest &request);
-    virtual void storeInCache(QDateTime expire, QByteArray buffer);
+    virtual void storeInCache(QDateTime expire, QByteArray &buffer);
     virtual bool retriveFromCache(const QString &key);
     QString actualCacheId() const;
     QString generateCacheId(QVariantMap props);
@@ -99,7 +110,6 @@ signals:
     void rawDataRecived(QString data);
     void cacheIdChanged(QString cacheId);
     void useCacheChanged(bool useCache);
-    void dataChanged(QVariantMap data);
     void includeDataInCacheIdChanged(bool includeDataInCacheId);
     void methodChanged(Method method);
     void managerChanged(WebRequestManager *manager);
@@ -107,8 +117,10 @@ signals:
     void cacheUsedChanged(bool cacheUsed);
     void expirationSecondsChanged(qint64 expirationSeconds);
     void loadingTextChanged(QString loadingText);
-
     void useUtf8Changed(bool useUtf8);
+    void headersChanged(QVariantMap headers);
+    void postDataChanged(AbstractData* postData);
+    void responseChanged(AbstractResponse *response);
 
 private slots:
     void finished();
@@ -120,7 +132,6 @@ public slots:
     void setIsBusy(bool isBusy);
     void setCacheId(QString cacheId);
     void setUseCache(bool useCache);
-    void setData(QVariantMap data);
     void setIncludeDataInCacheId(bool includeDataInCacheId);
     void setMethod(Method method);
     void setManager(WebRequestManager *manager);
@@ -128,6 +139,9 @@ public slots:
     void setExpirationSeconds(qint64 expirationSeconds);
     void setLoadingText(QString loadingText);
     void setUseUtf8(bool useUtf8);
+    void setHeaders(QVariantMap headers);
+    void setPostData(AbstractData* postData);
+    void setResponse(AbstractResponse *response);
 };
 
 #endif // WEBREQUEST_H
