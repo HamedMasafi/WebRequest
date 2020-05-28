@@ -31,10 +31,7 @@ public:
     explicit JsonObjectRequest(QObject *parent = nullptr);
 
 signals:
-    void finished(QJsonObject data);
-
-protected:
-    void processResponse(QByteArray buffer) override;
+    void finished(QJsonValue data);
 };
 
 #endif // JSONREQUEST_H

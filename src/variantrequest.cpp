@@ -18,6 +18,7 @@
  */
 
 #include "variantrequest.h"
+#include "response/stringresponse.h"
 
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
@@ -25,12 +26,14 @@
 
 VariantRequest::VariantRequest(QObject *parent) : WebRequest(parent)
 {
-
+    auto _response = new StringResponse(this);
+    connect(_response, &StringResponse::finished, this, &VariantRequest::processResponse);
+    setResponse(_response);
 }
 
-void VariantRequest::processResponse(QByteArray buffer)
+void VariantRequest::processResponse(QString buffer)
 {
-    QJsonDocument doc = QJsonDocument::fromJson(buffer);
+    QJsonDocument doc = QJsonDocument::fromJson(buffer.toUtf8());
 
     if (doc.isArray()) {
         QJsonArray a = doc.array();
@@ -53,5 +56,5 @@ void VariantRequest::processResponse(QByteArray buffer)
         return;
     }
 
-    emit replyError(0, "");
+    emit response()->error(0, "");
 }

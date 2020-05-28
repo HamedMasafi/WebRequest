@@ -38,3 +38,13 @@ QNetworkReply *QueryString::send(QNetworkRequest &request)
 
     return d()->m_manager->request(request);
 }
+
+QString QueryString::generateCacheKey()
+{
+    QString queryData;
+    for (auto i = m_data.begin(); i != m_data.end(); ++i) {
+        queryData.append(i.key() + "&" + i.value().toString() + ";;");
+    }
+
+    return queryData;
+}

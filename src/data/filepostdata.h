@@ -16,7 +16,8 @@ class FilePostData : public FormPostData
 public:
     FilePostData(WebRequest *parent = nullptr);
     Files files() const;
-    QNetworkReply *send(QNetworkRequest &request);
+    QNetworkReply *send(QNetworkRequest &request) override;
+    QString generateCacheKey() override;
 
 public slots:
     void setFiles(Files files);

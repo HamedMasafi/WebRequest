@@ -40,14 +40,7 @@ public slots:
     void setFileName(QUrl fileName);
 
 signals:
-    void finished(QImage data);
     void fileNameChanged(QUrl fileName);
-
-protected:
-    void processResponse(QByteArray buffer) override;
-//    void storeInCache(QDateTime expire, QByteArray buffer) override;
-    bool retriveFromCache(const QString &key) override;
-    void beforeSend(QNetworkRequest &request) override;
 };
 
 #endif // IMAGEREQUEST_H

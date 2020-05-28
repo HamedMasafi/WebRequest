@@ -188,6 +188,7 @@ QString WebRequestCache::value(const QString &key) const
         return QString();
     }
 
+    qDebug() << "value for" << key << "is" << q.value("value");
     return q.value("value").toString();
 #else
     if (cache.contains(key))

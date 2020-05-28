@@ -14,6 +14,7 @@ public:
     RawBody(QObject *parent = nullptr);
     QString data() const;
     QNetworkReply *send(QNetworkRequest &request);
+    QString generateCacheKey();
 
 public slots:
     void setData(QString data);

@@ -1,11 +1,11 @@
     #ifndef FORMPOSTDATA_H
 #define FORMPOSTDATA_H
 
-#include "objectdata.h"
+#include "abstractdata.h"
 
 #include <QVariantMap>
 
-class FormPostData : public ObjectData
+class FormPostData : public AbstractData
 {
     Q_OBJECT
     typedef QMap<QString, QString> Files;
@@ -19,9 +19,8 @@ public:
 
     QVariantMap data() const;
     Files files() const;
-    QNetworkReply *send(QNetworkRequest &request);
-
-
+    QNetworkReply *send(QNetworkRequest &request) override;
+    QString generateCacheKey() override;
 
 public slots:
     void addData(const QString &name, const QVariant &value);

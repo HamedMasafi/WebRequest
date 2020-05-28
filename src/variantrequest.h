@@ -32,8 +32,8 @@ public:
 signals:
     void finished(QVariant data);
 
-protected:
-    void processResponse(QByteArray buffer) override;
+private slots:
+    void processResponse(QString buffer);
 };
 
 #endif // VARIANTREQUEST_H

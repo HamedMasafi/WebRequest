@@ -69,7 +69,22 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
     return d()->m_manager->request(request, multiPart);
 }
 
+QString FilePostData::generateCacheKey()
+{
+    if (!m_files.count())
+        return FormPostData::generateCacheKey();
 
+    QString key;
+    for (auto i = m_files.begin(); i != m_files.end(); ++i) {
+        key.append(i.key() + "&" + i.value() + ";;");
+    }
+    auto dt = data();
+    for (auto data_it = dt.begin(); data_it != dt.end(); ++data_it) {
+        key.append(data_it.key() + "&" + data_it.value().toString() + ";;");
+    }
+
+    return key;
+}
 
 void FilePostData::addFile(const QString &name, const QUrl &file)
 {

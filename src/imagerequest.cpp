@@ -21,6 +21,8 @@
 #include "webrequestcache.h"
 #include "webrequest_p.h"
 
+#include "response/imageresponse.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
 
@@ -29,6 +31,9 @@
 ImageRequest::ImageRequest(QObject *parent) : WebRequest(parent)
 {
     setUseUtf8(false);
+    auto _response = new ImageResponse(this);
+    connect(_response, &ImageResponse::fileNameChanged, this, &ImageRequest::setFileName);
+    setResponse(_response);
 }
 
 QUrl ImageRequest::fileName() const
@@ -43,40 +48,4 @@ void ImageRequest::setFileName(QUrl fileName)
 
     m_fileName = fileName;
     emit fileNameChanged(m_fileName);
-}
-
-void ImageRequest::processResponse(QByteArray buffer)
-{
-    Q_UNUSED(buffer);
-    QUrl fn = fileName();
-    if (fn.isValid())
-        emit finished(QImage(fn.toLocalFile()));
-    else
-        emit replyError(-1, "Image is null");
-}
-
-//void ImageRequest::storeInCache(QDateTime expire, QByteArray buffer)
-//{
-//    QString cid = actualCacheId();
-//    if (cid.isEmpty())
-//        cid = url().toString().replace("'", "");
-//    QString fn = cacheManager()->setValue(cid, buffer, expire);
-//    setFileName(QUrl::fromLocalFile(fn));
-//}
-
-bool ImageRequest::retriveFromCache(const QString &key)
-{
-    QString fn = cacheManager()->fileName(key);
-    if (fn != QString()) {
-        setFileName(QUrl::fromLocalFile(fn));
-        processResponse(QByteArray());
-        return true;
-    }
-    return false;
-}
-
-void ImageRequest::beforeSend(QNetworkRequest &request)
-{
-    request.setHeader(QNetworkRequest::ContentTypeHeader,
-                      "");
 }

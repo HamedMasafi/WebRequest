@@ -7,8 +7,9 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMetaProperty>
 
-JsonPostData::JsonPostData(QObject *parent) : ObjectData(parent)
+JsonPostData::JsonPostData(QObject *parent) : AbstractData(parent)
 {
 
 }
@@ -27,34 +28,39 @@ void JsonPostData::setData(QJsonValue data)
     emit dataChanged(m_data);
 }
 
+QJsonDocument JsonPostData::json() const
+{
+    QJsonDocument doc;
+
+    if (m_data.isArray()) {
+        doc.setArray(m_data.toArray());
+    } else  {
+        QJsonObject obj;
+        if (m_data.isObject())
+            QJsonObject obj = m_data.toObject();
+
+        for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
+            QMetaProperty prop = metaObject()->property(i);
+            if (!prop.isStored())
+                obj.insert(prop.name(), QJsonValue::fromVariant(prop.read(this)));
+        }
+        doc.setObject(m_data.toObject());
+    }
+    return doc;
+}
+
 QNetworkReply *JsonPostData::send(QNetworkRequest &request)
 {
     request.setHeader(QNetworkRequest::ContentTypeHeader,
                       "application/json");
 
-    QJsonDocument doc;
     QByteArray body;
-
-    if (m_data.isArray()) {
-        doc.setArray(m_data.toArray());
-    } else  if (m_data.isObject()) {
-        QJsonObject obj = m_data.toObject();
-        auto props = readProperties();
-        for (auto i = props.begin(); i != props.end(); ++i)
-            obj.insert(i.key(), i.value().toString());
-
-
-        doc.setObject(m_data.toObject());
-    } else {
-        QJsonObject obj;
-        auto props = readProperties();
-
-        for (auto i = props.begin(); i != props.end(); ++i)
-            obj.insert(i.key(), i.value().toString());
-
-        doc.setObject(m_data.toObject());
-    }
-    body = doc.toJson(QJsonDocument::Compact);
+    body = json().toJson(QJsonDocument::Compact);
 
     return d()->m_manager->request(request, body);
+}
+
+QString JsonPostData::generateCacheKey()
+{
+    return json().toJson(QJsonDocument::Compact);
 }

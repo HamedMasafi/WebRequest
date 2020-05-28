@@ -7,6 +7,7 @@ Item {
     WebRequest {
         id: service
         url: "http://httpbin.org/get"
+
         response: JsonResponse {
             onFinished: output.text = JSON.stringify(data)
         }

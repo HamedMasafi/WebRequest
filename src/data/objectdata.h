@@ -9,7 +9,8 @@ class ObjectData : public AbstractData
 
 public:
     ObjectData(QObject *parent = nullptr);
-    virtual QNetworkReply *send(QNetworkRequest &request) = 0;
+    virtual QNetworkReply *send(QNetworkRequest &request) override = 0;
+    QString generateCacheKey() override;
 
 protected:
     QVariantMap readProperties() const;

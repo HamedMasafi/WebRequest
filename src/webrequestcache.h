@@ -31,7 +31,7 @@
 class WebRequestCache : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool databaseEnabled READ databaseEnabled)
+    Q_PROPERTY(bool databaseEnabled READ databaseEnabled NOTIFY databaseEnabledChanged)
 
 #ifdef QT_SQL_LIB
     QSqlDatabase db;
@@ -61,6 +61,9 @@ public:
     void clear();
 
     bool databaseEnabled() const;
+
+signals:
+    void databaseEnabledChanged(bool databaseEnabled);
 
 protected:
     void timerEvent(QTimerEvent *);

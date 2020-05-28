@@ -35,6 +35,7 @@ class WebRequestManager;
 class WebRequestCache;
 class AbstractData;
 class AbstractResponse;
+class ExpireTime;
 class WebRequest : public QObject
 {
     Q_OBJECT
@@ -51,10 +52,11 @@ class WebRequest : public QObject
     Q_PROPERTY(AbstractData* data READ data WRITE setData NOTIFY dataChanged)
     Q_PROPERTY(AbstractResponse* response READ response WRITE setResponse NOTIFY responseChanged)
     Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged STORED false)
-    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
     Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged STORED false)
     Q_PROPERTY(bool useUtf8 READ useUtf8 WRITE setUseUtf8 NOTIFY useUtf8Changed STORED false)
     Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
+    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
+    Q_PROPERTY(ExpireTime* expireTime READ expireTime WRITE setExpireTime NOTIFY expireTimeChanged)
 
 public:
     explicit WebRequest(QObject *parent = nullptr);
@@ -75,22 +77,20 @@ public:
     AbstractData* data() const;
     AbstractResponse *response() const;
 
+    ExpireTime* expireTime() const;
+
 protected:
-    void sendToServer(QVariantMap props = QMap<QString, QVariant>(), bool cache = true);
-    virtual void processResponse(QByteArray buffer);
-    virtual void beforeSend(QVariantMap &map);
-    virtual void beforeSend(QNetworkRequest &request);
+    void sendToServer(bool cache = true);
     virtual void storeInCache(QDateTime expire, QByteArray &buffer);
     virtual bool retriveFromCache(const QString &key);
     QString actualCacheId() const;
-    QString generateCacheId(QVariantMap props);
+    QString generateCacheId();
     void setCacheUsed(bool cacheUsed);
 
 signals:
     void replyError(const int &code, const QString &descript);
     void urlChanged(QUrl url);
     void isBusyChanged(bool isBusy);
-    void rawDataRecived(QString data);
     void cacheIdChanged(QString cacheId);
     void useCacheChanged(bool useCache);
     void includeDataInCacheIdChanged(bool includeDataInCacheId);
@@ -103,6 +103,8 @@ signals:
     void headersChanged(QVariantMap headers);
     void dataChanged(AbstractData* data);
     void responseChanged(AbstractResponse *response);
+
+    void expireTimeChanged(ExpireTime* expireTime);
 
 private slots:
     void finished();
@@ -123,6 +125,7 @@ public slots:
     void setHeaders(QVariantMap headers);
     void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
+    void setExpireTime(ExpireTime* expireTime);
 };
 
 #endif // WEBREQUEST_H

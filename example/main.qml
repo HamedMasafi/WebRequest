@@ -49,9 +49,7 @@ ApplicationWindow {
         }
         Text {
             text: "Is database cache enabled: " + Rest.WebRequestCacheInstance.databaseEnabled
-
         }
-
     }
 
     Pane {
@@ -62,12 +60,8 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignHCenter
                 running: true
             }
-
-            Repeater {
-                model: Rest.WebRequestManagerInstance.loadingTexts
-                Text {
-                    text: modelData
-                }
+            Text {
+                text: Rest.WebRequestManagerInstance.loadingText
             }
         }
     }

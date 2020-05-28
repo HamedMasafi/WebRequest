@@ -7,6 +7,7 @@ Item {
     WebRequest {
         id: service
         url: "http://httpbin.org/post"
+        loadingText: "Posting data"
         data: JsonPostData {
             data: ({
                        name: 'hamed',
@@ -16,6 +17,7 @@ Item {
 
         response: JsonResponse {
             onFinished: output.text = JSON.stringify(data)
+            onError: console.log("error", descript)
         }
     }
 
