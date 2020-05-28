@@ -9,6 +9,7 @@ class AbstractResponse : public AbstractHelper
     Q_OBJECT
 public:
     explicit AbstractResponse(QObject *parent = nullptr);
+    virtual void beforeSend(QNetworkRequest &request);
     virtual void processReply(const QByteArray &buffer) = 0;
     virtual bool storeCacheAsFile() const;
 

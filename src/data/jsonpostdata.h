@@ -1,11 +1,11 @@
 #ifndef JSONPOSTDATA_H
 #define JSONPOSTDATA_H
 
-#include "abstractdata.h"
+#include "objectdata.h"
 
 #include <QJsonValue>
 
-class JsonPostData : public AbstractData
+class JsonPostData : public ObjectData
 {
     Q_OBJECT
     Q_PROPERTY(QJsonValue data READ data WRITE setData NOTIFY dataChanged STORED false)
@@ -13,7 +13,7 @@ class JsonPostData : public AbstractData
     QJsonValue m_data;
 
 public:
-    JsonPostData();
+    JsonPostData(QObject *parent = nullptr);
     QJsonValue data() const;
     QNetworkReply *send(QNetworkRequest &request);
 

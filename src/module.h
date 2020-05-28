@@ -33,6 +33,7 @@ class KajModule : public QQmlExtensionPlugin
     Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 
 public:
+    static void registerTypes();
     void registerTypes(const char *uri);
 
     void initializeEngine(QQmlEngine *engine, const char *uri);

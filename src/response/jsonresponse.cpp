@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QNetworkRequest>
 
 JsonResponse::JsonResponse(QObject *parent) : AbstractResponse(parent)
 {
@@ -19,4 +20,9 @@ void JsonResponse::processReply(const QByteArray &buffer)
         emit finished(doc.array());
     else
         emit finished(QJsonValue());
+}
+
+void JsonResponse::beforeSend(QNetworkRequest &request)
+{
+    request.setRawHeader("Accept", "application/json");
 }

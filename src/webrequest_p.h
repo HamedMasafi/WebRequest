@@ -46,13 +46,12 @@ public:
     bool m_cacheUsed;
     qint64 m_expirationSeconds;
     QString loadingText;
-    WebRequest::Method m_method;
     WebRequestManager *m_manager;
     WebRequestCache *m_cacheManager;
     QMap<QString, QString> files;
     bool useUtf8;
     QVariantMap headers;
-    AbstractData *postData;
+    AbstractData *data;
     AbstractResponse *response;
 };
 

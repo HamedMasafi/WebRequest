@@ -1,11 +1,11 @@
     #ifndef FORMPOSTDATA_H
 #define FORMPOSTDATA_H
 
-#include "abstractdata.h"
+#include "objectdata.h"
 
 #include <QVariantMap>
 
-class FormPostData : public AbstractData
+class FormPostData : public ObjectData
 {
     Q_OBJECT
     typedef QMap<QString, QString> Files;

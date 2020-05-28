@@ -20,26 +20,33 @@
 #ifndef WEBREQUESTMANAGER_H
 #define WEBREQUESTMANAGER_H
 
+#include "webrequestmanager_p.h"
+
 #include <QMutex>
 #include <QObject>
+#include <QSharedDataPointer>
 
 class QNetworkReply;
 class QHttpMultiPart;
 class QNetworkRequest;
 
 class WebRequest;
-class WebRequestManagerPrivate;
 class WebRequestManager : public QObject {
     Q_OBJECT
 
-    WebRequestManagerPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(WebRequestManager)
+    QExplicitlySharedDataPointer<WebRequestManagerPrivate> d;
 
     Q_PROPERTY(bool isBusy READ isBusy WRITE setIsBusy NOTIFY isBusyChanged)
+    Q_PROPERTY(QString loadingText READ loadingText NOTIFY loadingTextChanged)
     Q_PROPERTY(QStringList loadingTexts READ loadingTexts NOTIFY loadingTextsChanged)
+    Q_PROPERTY(QString seprator READ seprator WRITE setSeprator NOTIFY sepratorChanged)
 
-    static WebRequestManager *_instance;
-    QMutex mutex;
+//    static WebRequestManager *_instance;
+//    QMutex mutex;
+//    QString m_seprator;
+//    int calls;
+//    QList<WebRequest*> requests;
+//    bool m_isBusy;
 
 public:
     WebRequestManager();
@@ -48,25 +55,29 @@ public:
 
     friend class WebRequest;
     QStringList loadingTexts() const;
+    QString loadingText() const;
+    QString seprator() const;
 
     QNetworkReply *request(const QNetworkRequest &request);
     QNetworkReply *request(const QNetworkRequest &request, QByteArray postData);
     QNetworkReply *request(const QNetworkRequest &request, QHttpMultiPart *multipart);
 
+
 private:
-    int calls;
-    QList<WebRequest*> requests;
-    bool m_isBusy;
 
     void addCall(WebRequest *r);
     void removeCall(WebRequest *r);
 
+
 public slots:
     void setIsBusy(bool isBusy);
+    void setSeprator(QString seprator);
 
 signals:
     void isBusyChanged(bool isBusy);
     void loadingTextsChanged(QStringList loadingTexts);
+    void loadingTextChanged(QString loadingText);
+    void sepratorChanged(QString seprator);
 };
 
 #endif // WEBREQUESTMANAGER_H

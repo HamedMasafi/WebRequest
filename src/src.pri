@@ -8,6 +8,8 @@ DEFINES += WEB_REQUEST_LIB
 SOURCES += \
    $$PWD/abstracthelper.cpp \
    $$PWD/data/abstractdata.cpp \
+   $$PWD/data/objectdata.cpp \
+   $$PWD/data/rawbody.cpp \
    $$PWD/response/abstractresponse.cpp \
    $$PWD/module.cpp \
    $$PWD/data/querystring.cpp \
@@ -28,6 +30,8 @@ SOURCES += \
 HEADERS += \
    $$PWD/abstracthelper.h \
    $$PWD/data/abstractdata.h \
+   $$PWD/data/objectdata.h \
+   $$PWD/data/rawbody.h \
    $$PWD/response/abstractresponse.h \
    $$PWD/module.h \
    $$PWD/data/querystring.h \

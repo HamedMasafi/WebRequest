@@ -7,13 +7,13 @@ Item {
     WebRequest {
         id: service
         url: "http://httpbin.org/get"
-        method: WebRequest.Get
         response: JsonResponse {
             onFinished: output.text = JSON.stringify(data)
         }
     }
 
     ColumnLayout {
+        anchors.fill: parent
         Button {
             text: "Send"
             onClicked: service.send()

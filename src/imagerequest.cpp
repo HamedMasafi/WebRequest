@@ -28,7 +28,6 @@
 
 ImageRequest::ImageRequest(QObject *parent) : WebRequest(parent)
 {
-    setMethod(Get);
     setUseUtf8(false);
 }
 

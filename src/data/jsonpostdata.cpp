@@ -8,7 +8,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-JsonPostData::JsonPostData()
+JsonPostData::JsonPostData(QObject *parent) : ObjectData(parent)
 {
 
 }
@@ -37,13 +37,24 @@ QNetworkReply *JsonPostData::send(QNetworkRequest &request)
 
     if (m_data.isArray()) {
         doc.setArray(m_data.toArray());
-        body = doc.toJson(QJsonDocument::Compact);
-    }
+    } else  if (m_data.isObject()) {
+        QJsonObject obj = m_data.toObject();
+        auto props = readProperties();
+        for (auto i = props.begin(); i != props.end(); ++i)
+            obj.insert(i.key(), i.value().toString());
 
-    if (m_data.isObject()) {
+
         doc.setObject(m_data.toObject());
-        body = doc.toJson(QJsonDocument::Compact);
+    } else {
+        QJsonObject obj;
+        auto props = readProperties();
+
+        for (auto i = props.begin(); i != props.end(); ++i)
+            obj.insert(i.key(), i.value().toString());
+
+        doc.setObject(m_data.toObject());
     }
+    body = doc.toJson(QJsonDocument::Compact);
 
     return d()->m_manager->request(request, body);
 }

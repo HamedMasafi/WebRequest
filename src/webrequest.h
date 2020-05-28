@@ -46,10 +46,9 @@ class WebRequest : public QObject
     Q_PROPERTY(QString cacheId READ cacheId WRITE setCacheId NOTIFY cacheIdChanged STORED false)
     Q_PROPERTY(bool useCache READ useCache WRITE setUseCache NOTIFY useCacheChanged STORED false)
     Q_PROPERTY(bool includeDataInCacheId READ includeDataInCacheId WRITE setIncludeDataInCacheId NOTIFY includeDataInCacheIdChanged STORED false)
-    Q_PROPERTY(Method method READ method WRITE setMethod NOTIFY methodChanged STORED false)
     Q_PROPERTY(WebRequestManager* manager READ manager WRITE setManager NOTIFY managerChanged STORED false)
     Q_PROPERTY(WebRequestCache* cacheManager READ cacheManager WRITE setCacheManager NOTIFY cacheManagerChanged STORED false)
-    Q_PROPERTY(AbstractData* postData READ postData WRITE setPostData NOTIFY postDataChanged)
+    Q_PROPERTY(AbstractData* data READ data WRITE setData NOTIFY dataChanged)
     Q_PROPERTY(AbstractResponse* response READ response WRITE setResponse NOTIFY responseChanged)
     Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged STORED false)
     Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
@@ -58,18 +57,6 @@ class WebRequest : public QObject
     Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
 
 public:
-    enum Method {
-        Get,
-        Post
-    };
-    Q_ENUMS(Method)
-
-    enum ContentType {
-        Json,
-        UrlEncoded
-    };
-    Q_ENUMS(ContentType)
-
     explicit WebRequest(QObject *parent = nullptr);
     ~WebRequest();
 
@@ -78,18 +65,14 @@ public:
     QString cacheId() const;
     bool useCache() const;
     bool includeDataInCacheId() const;
-    Method method() const;
     WebRequestManager *manager() const;
     WebRequestCache *cacheManager() const;
     bool cacheUsed() const;
     qint64 expirationSeconds() const;
     QString loadingText() const;
     bool useUtf8() const;
-
     QVariantMap headers() const;
-
-    AbstractData* postData() const;
-
+    AbstractData* data() const;
     AbstractResponse *response() const;
 
 protected:
@@ -111,7 +94,6 @@ signals:
     void cacheIdChanged(QString cacheId);
     void useCacheChanged(bool useCache);
     void includeDataInCacheIdChanged(bool includeDataInCacheId);
-    void methodChanged(Method method);
     void managerChanged(WebRequestManager *manager);
     void cacheManagerChanged(WebRequestCache *cacheManager);
     void cacheUsedChanged(bool cacheUsed);
@@ -119,7 +101,7 @@ signals:
     void loadingTextChanged(QString loadingText);
     void useUtf8Changed(bool useUtf8);
     void headersChanged(QVariantMap headers);
-    void postDataChanged(AbstractData* postData);
+    void dataChanged(AbstractData* data);
     void responseChanged(AbstractResponse *response);
 
 private slots:
@@ -133,14 +115,13 @@ public slots:
     void setCacheId(QString cacheId);
     void setUseCache(bool useCache);
     void setIncludeDataInCacheId(bool includeDataInCacheId);
-    void setMethod(Method method);
     void setManager(WebRequestManager *manager);
     void setCacheManager(WebRequestCache *cacheManager);
     void setExpirationSeconds(qint64 expirationSeconds);
     void setLoadingText(QString loadingText);
     void setUseUtf8(bool useUtf8);
     void setHeaders(QVariantMap headers);
-    void setPostData(AbstractData* postData);
+    void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
 };
 

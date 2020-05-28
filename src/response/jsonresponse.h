@@ -12,7 +12,8 @@ class JsonResponse : public AbstractResponse
 public:
     JsonResponse(QObject *parent = nullptr);
 
-    void processReply(const QByteArray &buffer);
+    void processReply(const QByteArray &buffer) override;
+    void beforeSend(QNetworkRequest &request) override;
 
 signals:
     void finished(QJsonValue data);

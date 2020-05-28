@@ -7,8 +7,7 @@ Item {
     WebRequest {
         id: service
         url: "http://httpbin.org/post"
-        method: WebRequest.Post
-        postData: JsonPostData {
+        data: JsonPostData {
             data: ({
                        name: 'hamed',
                        n: 1

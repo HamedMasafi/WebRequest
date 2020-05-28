@@ -72,7 +72,7 @@ int WebRequestCache::clean()
 {
 #ifdef QT_SQL_LIB
     QSqlQuery q(db);
-    q.prepare("SELECT id FROM data WHERE has_fle = 1 AND expire<:expire");
+    q.prepare("SELECT id FROM data WHERE has_file = 1 AND expire<:expire");
     q.bindValue(":expire", QDateTime::currentDateTime());
     q.exec();
 
@@ -152,7 +152,7 @@ WebRequestCache::WebRequestCache(const QString &name)
         db.setDatabaseName(path + "/cache.dat");
     else
         db.setDatabaseName(path + "/" + name + ".dat");
-qDebug() << path;
+
     bool ok = db.open();
 
     if (!ok) {

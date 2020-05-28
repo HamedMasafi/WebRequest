@@ -24,56 +24,54 @@
 #include <QNetworkAccessManager>
 
 WebRequestManagerPrivate::WebRequestManagerPrivate(WebRequestManager *parent)
-    : q_ptr(parent), networdAccessManager(new QNetworkAccessManager(parent))
+    : networdAccessManager(new QNetworkAccessManager(parent))
+      , calls(0), isBusy(false), seprator("\n")
 {
 
 }
 
-// RestRequestCallsManager
-WebRequestManager* WebRequestManager::_instance = nullptr;
-
-WebRequestManager::WebRequestManager() : d_ptr(new WebRequestManagerPrivate(this))
-  , calls(0), m_isBusy(false)
+WebRequestManager::WebRequestManager() : QObject()
+    , d(new WebRequestManagerPrivate(this))
 { }
 
 void WebRequestManager::addCall(WebRequest *r)
 {
-    mutex.lock();
-    calls++;
-    requests.append(r);
-    emit loadingTextsChanged(loadingTexts());
-//    qDebug() << "Calls: " << calls << "++";
+    d->mutex.lock();
+    d->calls++;
+    d->requests.append(r);
+    auto lt = loadingTexts();
+    emit loadingTextsChanged(lt);
+    emit loadingTextChanged(lt.join(d->seprator));
     setIsBusy(true);
-    mutex.unlock();
+    d->mutex.unlock();
 }
 
 void WebRequestManager::removeCall(WebRequest *r)
 {
-    mutex.lock();
-    calls--;
-    requests.removeOne(r);
+    d->mutex.lock();
+    d->calls--;
+    d->requests.removeOne(r);
     emit loadingTextsChanged(loadingTexts());
 //    qDebug() << "Calls: " << calls << "--";
-    setIsBusy(calls);
-    mutex.unlock();
+    setIsBusy(d->calls);
+    d->mutex.unlock();
 }
 
 WebRequestManager *WebRequestManager::instance()
 {
-    if (_instance == nullptr)
-        _instance = new WebRequestManager;
-    return _instance;
+    static WebRequestManager *ins = new WebRequestManager;
+    return ins;
 }
 
 bool WebRequestManager::isBusy() const
 {
-    return m_isBusy;
+    return d->calls;
 }
 
 QStringList WebRequestManager::loadingTexts() const
 {
     QStringList ret;
-    foreach (WebRequest *r, requests)
+    foreach (WebRequest *r, d->requests)
         if (!r->loadingText().isEmpty())
             ret.append(r->loadingText());
     return ret;
@@ -81,27 +79,43 @@ QStringList WebRequestManager::loadingTexts() const
 
 QNetworkReply *WebRequestManager::request(const QNetworkRequest &request)
 {
-    Q_D(WebRequestManager);
     return d->networdAccessManager->get(request);
 }
 
 QNetworkReply *WebRequestManager::request(const QNetworkRequest &request, QByteArray postData)
 {
-    Q_D(WebRequestManager);
     return d->networdAccessManager->post(request, postData);
 }
 
 QNetworkReply *WebRequestManager::request(const QNetworkRequest &request, QHttpMultiPart *multipart)
 {
-    Q_D(WebRequestManager);
     return d->networdAccessManager->post(request, multipart);
+}
+
+QString WebRequestManager::loadingText() const
+{
+    return loadingTexts().join(d->seprator);
+}
+
+QString WebRequestManager::seprator() const
+{
+    return d->seprator;
 }
 
 void WebRequestManager::setIsBusy(bool isBusy)
 {
-    if (m_isBusy == isBusy)
+    if (d->isBusy == isBusy)
         return;
 
-    m_isBusy = isBusy;
-    emit isBusyChanged(m_isBusy);
+    d->isBusy = isBusy;
+    emit isBusyChanged(isBusy);
+}
+
+void WebRequestManager::setSeprator(QString seprator)
+{
+    if (d->seprator == seprator)
+        return;
+
+    d->seprator = seprator;
+    emit sepratorChanged(seprator);
 }

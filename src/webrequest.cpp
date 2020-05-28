@@ -40,8 +40,8 @@ WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
     m_useCache(true), m_data(QVariantMap()), m_includeDataInCacheId(false),
     m_actualCacheId(QString()), m_expirationSeconds(0),
-    m_method(WebRequest::Post), useUtf8(true),
-    postData(nullptr), response(nullptr)
+    useUtf8(true),
+    data(nullptr), response(nullptr)
 {
 }
 
@@ -61,28 +61,31 @@ WebRequest::~WebRequest()
 
 void WebRequest::sendToServer(QVariantMap props, bool cache)
 {
-
-    QByteArray postData = "";
-    QUrlQuery queryData;
-    beforeSend(props);
-    if (props.count()) {
-        foreach (auto key, props.keys()) {
-            if (postData != "")
-                postData.append("&");
-
-            queryData.addQueryItem(key, props.value(key).toString());
-            postData.append(key + "=" + props.value(key).toString());
-        }
+    if (!d->response) {
+        qWarning() << "No response defined!";
+        return;
     }
-    postData = queryData.toString(QUrl::FullyEncoded).toUtf8();
+//    QByteArray postData = "";
+//    QUrlQuery queryData;
+//    beforeSend(props);
+//    if (props.count()) {
+//        foreach (auto key, props.keys()) {
+//            if (postData != "")
+//                postData.append("&");
 
-    if (d->m_useCache && cache) {
-        QString id = generateCacheId(props);
-        if (retriveFromCache(id)) {
-            setCacheUsed(true);
-            return;
-        }
-    }
+//            queryData.addQueryItem(key, props.value(key).toString());
+//            postData.append(key + "=" + props.value(key).toString());
+//        }
+//    }
+//    postData = queryData.toString(QUrl::FullyEncoded).toUtf8();
+
+//    if (d->m_useCache && cache) {
+//        QString id = generateCacheId(props);
+//        if (retriveFromCache(id)) {
+//            setCacheUsed(true);
+//            return;
+//        }
+//    }
     d->calls++;
     setCacheUsed(false);
 
@@ -96,92 +99,93 @@ void WebRequest::sendToServer(QVariantMap props, bool cache)
         for (auto i = d->headers.begin(); i != d->headers.end(); ++i)
             request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
 
+    d->response->beforeSend(request);
     QNetworkReply *r;
-    if (d->postData) {
-        r = d->postData->send(request);
+    if (d->data) {
+        r = d->data->send(request);
     } else {
         r = manager()->request(request);
     }
     connect(r, &QNetworkReply::finished, this, &WebRequest::finished);
 
-    return;
+//    return;
 
-    if (!d->files.count())
-        request.setHeader(QNetworkRequest::ContentTypeHeader,
-                          "application/x-www-form-urlencoded");
+//    if (!d->files.count())
+//        request.setHeader(QNetworkRequest::ContentTypeHeader,
+//                          "application/x-www-form-urlencoded");
 
-    beforeSend(request);
-/*
-    QByteArray postData = "";
-    foreach (auto key, props.keys()) {
-        if (postData != "")
-            postData.append("&");
+//    beforeSend(request);
+///*
+//    QByteArray postData = "";
+//    foreach (auto key, props.keys()) {
+//        if (postData != "")
+//            postData.append("&");
 
-        postData.append(key + "=" + props.value(key).toString());
-    }
+//        postData.append(key + "=" + props.value(key).toString());
+//    }
 
-    calls.insert(requestId, callBack);
-    net->post(request, postData);
-*/
+//    calls.insert(requestId, callBack);
+//    net->post(request, postData);
+//*/
 
-    QNetworkReply *reply = nullptr;
-    if (d->files.count()) {
-        QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+//    QNetworkReply *reply = nullptr;
+//    if (d->files.count()) {
+//        QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
-        QMap<QString, QString>::iterator i;
-        for (i = d->files.begin(); i != d->files.end(); ++i) {
-            QHttpPart filePart;
-            QFile *f = new QFile(i.value());
-            if (!f->exists())
-                return;
-
-            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-            QString t = QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"")
-                    .arg(i.key()).arg(i.value());
-            filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-            qDebug() << "form-data; name=\"" + i.key() + "\"";
-            f->open(QIODevice::ReadOnly);
-            filePart.setBodyDevice(f);
-            multiPart->append(filePart);
-            f->setParent(multiPart);
-        }
-        QMap<QString, QVariant>::iterator data_it;
-        for (data_it = d->m_data.begin(); data_it != d->m_data.end(); ++data_it) {
-            QHttpPart textPart;
+//        QMap<QString, QString>::iterator i;
+//        for (i = d->files.begin(); i != d->files.end(); ++i) {
+//            QHttpPart filePart;
+//            QFile *f = new QFile(i.value());
+//            if (!f->exists())
+//                return;
 
 //            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-            QString t = QString("Content-Disposition: form-data; name=\"%1\"")
-                    .arg(data_it.key());
-            textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-            textPart.setBody(data_it.value().toString().toLocal8Bit());
-            multiPart->append(textPart);
-        }
+//            QString t = QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"")
+//                    .arg(i.key()).arg(i.value());
+//            filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
+//            qDebug() << "form-data; name=\"" + i.key() + "\"";
+//            f->open(QIODevice::ReadOnly);
+//            filePart.setBodyDevice(f);
+//            multiPart->append(filePart);
+//            f->setParent(multiPart);
+//        }
+//        QMap<QString, QVariant>::iterator data_it;
+//        for (data_it = d->m_data.begin(); data_it != d->m_data.end(); ++data_it) {
+//            QHttpPart textPart;
 
-        reply = manager()->request(request, multiPart);
-//                d->net->post(request, multiPart);
-        multiPart->setParent(reply);
-    } else {
-        if (props.count()) {
-            if (d->m_method == Get) {
-                QUrl url = request.url();
-                url.setQuery(postData);
-                request.setUrl(url);
-                //            d->net->get(request);
-                reply = manager()->request(request);
-            } else {
-                //            d->net->post(request, postData);
-                reply = manager()->request(request, postData);
-            }
-        } else {
-            if (d->m_method == Get)
-                //            d->net->get(request);
-                reply = manager()->request(request);
-            else
-                //            d->net->post(request, QByteArray());
-                reply = manager()->request(request, QByteArray());
-        }
-    }
-    connect(reply, &QNetworkReply::finished, this, &WebRequest::finished);
+////            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
+//            QString t = QString("Content-Disposition: form-data; name=\"%1\"")
+//                    .arg(data_it.key());
+//            textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
+//            textPart.setBody(data_it.value().toString().toLocal8Bit());
+//            multiPart->append(textPart);
+//        }
+
+//        reply = manager()->request(request, multiPart);
+////                d->net->post(request, multiPart);
+//        multiPart->setParent(reply);
+//    } else {
+//        if (props.count()) {
+//            if (d->m_method == Get) {
+//                QUrl url = request.url();
+//                url.setQuery(postData);
+//                request.setUrl(url);
+//                //            d->net->get(request);
+//                reply = manager()->request(request);
+//            } else {
+//                //            d->net->post(request, postData);
+//                reply = manager()->request(request, postData);
+//            }
+//        } else {
+//            if (d->m_method == Get)
+//                //            d->net->get(request);
+//                reply = manager()->request(request);
+//            else
+//                //            d->net->post(request, QByteArray());
+//                reply = manager()->request(request, QByteArray());
+//        }
+//    }
+//    connect(reply, &QNetworkReply::finished, this, &WebRequest::finished);
 }
 
 void WebRequest::send(bool cache)
@@ -237,12 +241,6 @@ bool WebRequest::includeDataInCacheId() const
     return d->m_includeDataInCacheId;
 }
 
-WebRequest::Method WebRequest::method() const
-{
-
-    return d->m_method;
-}
-
 WebRequestManager *WebRequest::manager() const
 {
 
@@ -284,9 +282,9 @@ QVariantMap WebRequest::headers() const
     return d->headers;
 }
 
-AbstractData *WebRequest::postData() const
+AbstractData *WebRequest::data() const
 {
-    return d->postData;
+    return d->data;
 }
 
 AbstractResponse *WebRequest::response() const
@@ -479,16 +477,6 @@ void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
     emit includeDataInCacheIdChanged(d->m_includeDataInCacheId);
 }
 
-void WebRequest::setMethod(WebRequest::Method method)
-{
-
-    if (d->m_method == method)
-        return;
-
-    d->m_method = method;
-    emit methodChanged(d->m_method);
-}
-
 void WebRequest::setManager(WebRequestManager *manager)
 {
 
@@ -548,14 +536,14 @@ void WebRequest::setHeaders(QVariantMap headers)
     emit headersChanged(headers);
 }
 
-void WebRequest::setPostData(AbstractData *postData)
+void WebRequest::setData(AbstractData *data)
 {
-    if (d->postData == postData)
+    if (d->data == data)
         return;
 
-    postData->setD(d);
-    d->postData = postData;
-    emit postDataChanged(postData);
+    data->setD(d);
+    d->data = data;
+    emit dataChanged(data);
 }
 
 void WebRequest::setResponse(AbstractResponse *response)

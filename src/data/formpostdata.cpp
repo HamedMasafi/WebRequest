@@ -6,7 +6,7 @@
 #include "../webrequestmanager.h"
 #include "../webrequest_p.h"
 
-FormPostData::FormPostData(QObject *parent) : AbstractData(parent)
+FormPostData::FormPostData(QObject *parent) : ObjectData(parent)
 {
 
 }
@@ -48,6 +48,11 @@ QNetworkReply *FormPostData::send(QNetworkRequest &request)
     if (m_data.count())
         foreach (auto key, m_data.keys())
             queryData.addQueryItem(key, m_data.value(key).toString());
+
+    auto props = readProperties();
+    for (auto i = props.begin(); i != props.end(); ++i) {
+        queryData.addQueryItem(i.key(), i.value().toString());
+    }
 
     auto body = queryData.toString(QUrl::FullyEncoded).toUtf8();
 

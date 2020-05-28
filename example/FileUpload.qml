@@ -8,8 +8,9 @@ Item {
     WebRequest {
         id: service
         url: "http://www.tipjar.com/cgi-bin/test"
-        method: WebRequest.Post
-        postData: FilePostData {
+        loadingText: "Uploading file"
+
+        data: FilePostData {
             id: postData
         }
 
