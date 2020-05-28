@@ -42,7 +42,7 @@ WebRequestPrivate::WebRequestPrivate() :
     m_useCache(true), m_includeDataInCacheId(false),
     m_expirationSeconds(0),
     useUtf8(true),
-    data(nullptr), response(nullptr), expireTime(new ExpireTime)
+    data(nullptr), response(nullptr)
 {
 }
 
@@ -51,6 +51,7 @@ WebRequest::WebRequest(QObject *parent)
 {
     setManager(WebRequestManager::instance());
     setCacheManager(WebRequestCache::instance());
+    d->expireTime = new ExpireTime(this);
 }
 
 WebRequest::~WebRequest()
@@ -265,8 +266,8 @@ void WebRequest::finished()
     if (d->m_useCache) {
         QDateTime expire = QDateTime::currentDateTime();
 
-        if (d->m_expirationSeconds) {
-            expire = expire.addSecs(d->m_expirationSeconds);
+        if (d->expireTime) {
+            expire = expire.addSecs(d->expireTime->totalSecs());
         } else {
             QString cacheControl = QString(reply->rawHeader("cache-control"));
             QRegularExpression r("max-age=(\\d+)");

@@ -5,6 +5,20 @@ ExpireTime::ExpireTime(QObject *parent) : QObject(parent)
 
 }
 
+qint64 ExpireTime::totalSecs()
+{
+    return m_second
+            + (m_minute * 60)
+            + (m_hour * 60 * 60)
+            + (m_day * 60 * 60 * 24)
+            + (m_month * 60 * 60 * 24 * 30);
+}
+
+ExpireTime::operator bool()
+{
+    return m_second && m_minute && m_hour && m_day && m_month;
+}
+
 int ExpireTime::second() const
 {
     return m_second;
@@ -75,7 +89,7 @@ void ExpireTime::setMonth(int month)
     emit monthChanged(m_month);
 }
 
-ExpireTime::operator qlonglong()
+ExpireTime::operator qint64()
 {
-    return 0;
+    return totalSecs();
 }

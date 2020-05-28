@@ -20,7 +20,9 @@ class ExpireTime : public QObject
 
 public:
     explicit ExpireTime(QObject *parent = nullptr);
-    operator qlonglong();
+    operator qint64();
+    operator bool();
+    qint64 totalSecs();
 
     int second() const;
     int minute() const;
