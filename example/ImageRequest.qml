@@ -11,10 +11,12 @@ Item {
         response: ImageResponse {
             id: imageResponse
 //            onFinished: avatar.source = fileName
+            onError: console.log("Error ", code, descript)
         }
     }
 
     ColumnLayout {
+        anchors.fill: parent
         Button {
             text: "Get avatar"
             onClicked: service.send()
@@ -22,6 +24,7 @@ Item {
         Image {
             id: avatar
             source: imageResponse.fileName
+            fillMode: Image.PreserveAspectFit
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
