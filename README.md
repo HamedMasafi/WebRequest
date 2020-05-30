@@ -4,7 +4,7 @@
 
 ###  Simple get request
 
-```json
+```qml
 WebRequest  {
   id:  service
   url:  "http://httpbin.org/get"
@@ -16,7 +16,7 @@ WebRequest  {
 ```
 
 ### Post data
-```json
+```qml
 WebRequest  {
   id:  service
   url:  "http://httpbin.org/post"
