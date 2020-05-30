@@ -88,7 +88,7 @@ void WebRequest::sendToServer(bool cache)
 
     if (d->headers.count())
         for (auto i = d->headers.begin(); i != d->headers.end(); ++i)
-            request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
+            request.setRawHeader(i.key().toUtf8(), i.value());
 
     d->response->beforeSend(request);
     QNetworkReply *r;
@@ -179,7 +179,7 @@ bool WebRequest::useUtf8() const
     return d->useUtf8;
 }
 
-QVariantMap WebRequest::headers() const
+Rest::Headers WebRequest::headers() const
 {
     return d->headers;
 }
@@ -385,7 +385,7 @@ void WebRequest::setUseUtf8(bool useUtf8)
     emit useUtf8Changed(d->useUtf8);
 }
 
-void WebRequest::setHeaders(QVariantMap headers)
+void WebRequest::setHeaders(Rest::Headers headers)
 {
     if (d->headers == headers)
         return;

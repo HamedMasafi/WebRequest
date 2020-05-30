@@ -27,6 +27,8 @@
 
 #include <QSharedDataPointer>
 
+#include "global.h"
+
 class QNetworkRequest;
 class QNetworkReply;
 
@@ -54,7 +56,7 @@ class WebRequest : public QObject
     Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged STORED false)
     Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged STORED false)
     Q_PROPERTY(bool useUtf8 READ useUtf8 WRITE setUseUtf8 NOTIFY useUtf8Changed STORED false)
-    Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
+    Q_PROPERTY(Rest::Headers headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
     Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
     Q_PROPERTY(ExpireTime* expireTime READ expireTime WRITE setExpireTime NOTIFY expireTimeChanged)
 
@@ -73,7 +75,7 @@ public:
     qint64 expirationSeconds() const;
     QString loadingText() const;
     bool useUtf8() const;
-    QVariantMap headers() const;
+    Rest::Headers headers() const;
     AbstractData* data() const;
     AbstractResponse *response() const;
 
@@ -100,7 +102,7 @@ signals:
     void expirationSecondsChanged(qint64 expirationSeconds);
     void loadingTextChanged(QString loadingText);
     void useUtf8Changed(bool useUtf8);
-    void headersChanged(QVariantMap headers);
+    void headersChanged(Rest::Headers headers);
     void dataChanged(AbstractData* data);
     void responseChanged(AbstractResponse *response);
 
@@ -122,7 +124,7 @@ public slots:
     void setExpirationSeconds(qint64 expirationSeconds);
     void setLoadingText(QString loadingText);
     void setUseUtf8(bool useUtf8);
-    void setHeaders(QVariantMap headers);
+    void setHeaders(Rest::Headers headers);
     void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
     void setExpireTime(ExpireTime* expireTime);

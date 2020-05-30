@@ -17,7 +17,7 @@ QVariantMap FormPostData::data() const
     return m_data;
 }
 
-FormPostData::Files FormPostData::files() const
+Rest::Files FormPostData::files() const
 {
     return m_files;
 }
@@ -31,7 +31,7 @@ void FormPostData::setData(QVariantMap data)
     emit dataChanged(m_data);
 }
 
-void FormPostData::setFiles(Files files)
+void FormPostData::setFiles(Rest::Files files)
 {
     if (m_files == files)
         return;

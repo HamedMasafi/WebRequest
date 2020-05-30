@@ -14,12 +14,12 @@ FilePostData::FilePostData(WebRequest *parent) : FormPostData(parent)
 
 }
 
-FilePostData::Files FilePostData::files() const
+Rest::Files FilePostData::files() const
 {
     return m_files;
 }
 
-void FilePostData::setFiles(FilePostData::Files files)
+void FilePostData::setFiles(Rest::Files files)
 {
     if (m_files == files)
         return;

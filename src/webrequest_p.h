@@ -47,9 +47,9 @@ public:
     QString loadingText;
     WebRequestManager *m_manager;
     WebRequestCache *m_cacheManager;
-    QMap<QString, QString> files;
+    Rest::Files files;
     bool useUtf8;
-    QVariantMap headers;
+    Rest::Headers headers;
     AbstractData *data;
     AbstractResponse *response;
     ExpireTime* expireTime;
