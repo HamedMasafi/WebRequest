@@ -2,6 +2,7 @@
 #define FILEPOSTDATA_H
 
 #include "formpostdata.h"
+#include "global.h"
 
 #include <QMap>
 
@@ -9,22 +10,22 @@ class FilePostData : public FormPostData
 {
     Q_OBJECT
 
-    typedef QMap<QString, QString> Files;
-    Q_PROPERTY(Files files READ files WRITE setFiles NOTIFY filesChanged)
-    Files m_files;
+    Q_PROPERTY(Rest::Files files READ files WRITE setFiles NOTIFY filesChanged)
+    Rest::Files m_files;
 
 public:
     FilePostData(WebRequest *parent = nullptr);
-    Files files() const;
-    QNetworkReply *send(QNetworkRequest &request);
+    Rest::Files files() const;
+    QNetworkReply *send(QNetworkRequest &request) override;
+    QString generateCacheKey() override;
 
 public slots:
-    void setFiles(Files files);
+    void setFiles(Rest::Files files);
     void addFile(const QString &name, const QUrl &file);
     void addFile(const QString &name, const QString &path);
 
 signals:
-    void filesChanged(Files files);
+    void filesChanged(Rest::Files files);
 
 };
 

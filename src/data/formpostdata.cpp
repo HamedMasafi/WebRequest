@@ -3,10 +3,11 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QUrlQuery>
+#include <QMetaProperty>
 #include "../webrequestmanager.h"
 #include "../webrequest_p.h"
 
-FormPostData::FormPostData(QObject *parent) : ObjectData(parent)
+FormPostData::FormPostData(QObject *parent) : AbstractData(parent)
 {
 
 }
@@ -16,7 +17,7 @@ QVariantMap FormPostData::data() const
     return m_data;
 }
 
-FormPostData::Files FormPostData::files() const
+Rest::Files FormPostData::files() const
 {
     return m_files;
 }
@@ -30,7 +31,7 @@ void FormPostData::setData(QVariantMap data)
     emit dataChanged(m_data);
 }
 
-void FormPostData::setFiles(Files files)
+void FormPostData::setFiles(Rest::Files files)
 {
     if (m_files == files)
         return;
@@ -41,22 +42,38 @@ void FormPostData::setFiles(Files files)
 
 QNetworkReply *FormPostData::send(QNetworkRequest &request)
 {
-    Q_UNUSED(request)
-
     QUrlQuery queryData;
 
     if (m_data.count())
         foreach (auto key, m_data.keys())
             queryData.addQueryItem(key, m_data.value(key).toString());
 
-    auto props = readProperties();
-    for (auto i = props.begin(); i != props.end(); ++i) {
-        queryData.addQueryItem(i.key(), i.value().toString());
+    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
+        QMetaProperty prop = metaObject()->property(i);
+        if (!prop.isStored())
+            queryData.addQueryItem(prop.name(), prop.read(this).toString());
     }
 
     auto body = queryData.toString(QUrl::FullyEncoded).toUtf8();
 
     return d()->m_manager->request(request, body);
+}
+
+QString FormPostData::generateCacheKey()
+{
+    QUrlQuery queryData;
+
+    if (m_data.count())
+        foreach (auto key, m_data.keys())
+            queryData.addQueryItem(key, m_data.value(key).toString());
+
+    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
+        QMetaProperty prop = metaObject()->property(i);
+        if (!prop.isStored())
+            queryData.addQueryItem(prop.name(), prop.read(this).toString());
+    }
+
+    return queryData.toString(QUrl::FullyEncoded);
 }
 
 void FormPostData::addData(const QString &name, const QVariant &value)

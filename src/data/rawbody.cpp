@@ -17,6 +17,11 @@ QNetworkReply *RawBody::send(QNetworkRequest &request)
     return d()->m_manager->request(request, m_data.toUtf8());
 }
 
+QString RawBody::generateCacheKey()
+{
+    return m_data.replace("'", "");
+}
+
 void RawBody::setData(QString data)
 {
     if (m_data == data)

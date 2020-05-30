@@ -18,12 +18,11 @@
  */
 
 #include "stringrequest.h"
+#include "response/stringresponse.h"
 
 StringRequest::StringRequest(QObject *parent) : WebRequest(parent)
-{ }
-
-void StringRequest::processResponse(QByteArray buffer)
 {
-    emit finished(QString(buffer));
+    auto _response = new StringResponse(this);
+    connect(_response, &StringResponse::finished, this, &StringRequest::finished);
+    setResponse(_response);
 }
-

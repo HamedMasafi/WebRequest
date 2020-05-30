@@ -25,6 +25,7 @@
 #include "webrequest.h"
 #include "webrequestcache.h"
 #include "webrequestmanager.h"
+#include "expiretime.h"
 
 #include "data/abstractdata.h"
 #include "data/formpostdata.h"
@@ -32,6 +33,7 @@
 #include "data/jsonpostdata.h"
 #include "data/querystring.h"
 #include "data/rawbody.h"
+#include "data/objectdata.h"
 
 #include "response/abstractresponse.h"
 #include "response/stringresponse.h"
@@ -59,34 +61,36 @@ void KajModule::registerTypes()
     qRegisterMetaType<WebRequestManager*>();
 
     //Web request
-    qmlRegisterType<WebRequest>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequest");
-    qmlRegisterType<StringRequest>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringRequest");
-    qmlRegisterType<JsonObjectRequest>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonRequest");
-    qmlRegisterType<VariantRequest>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "VariantRequest");
-    qmlRegisterType<ImageRequest>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageRequest");
-    qmlRegisterType<WebRequestCache>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCache");
-    qmlRegisterType<WebRequestManager>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManager");
-    qmlRegisterSingletonType<WebRequestCache>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCacheInstance", createSingletonCache);
-    qmlRegisterSingletonType<WebRequestManager>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManagerInstance", createSingletonManager);
+    qmlRegisterType<WebRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequest");
+    qmlRegisterType<StringRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringRequest");
+    qmlRegisterType<JsonObjectRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonRequest");
+    qmlRegisterType<VariantRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "VariantRequest");
+    qmlRegisterType<ImageRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageRequest");
+    qmlRegisterType<ExpireTime>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ExpireTime");
+    qmlRegisterType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCache");
+    qmlRegisterType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManager");
+    qmlRegisterSingletonType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManagerInstance", createSingletonManager);
+    qmlRegisterSingletonType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestCacheInstance", createSingletonCache);
 
     //form data
-    qmlRegisterType<FormPostData>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FormPostData");
-    qmlRegisterType<FilePostData>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FilePostData");
-    qmlRegisterType<JsonPostData>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonPostData");
-    qmlRegisterType<RawBody>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "RawBody");
-    qmlRegisterType<QueryString>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "QueryString");
-    qmlRegisterUncreatableType<AbstractData>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractData", "Abstract class");
+    qmlRegisterType<FormPostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FormPostData");
+    qmlRegisterType<FilePostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FilePostData");
+    qmlRegisterType<JsonPostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonPostData");
+    qmlRegisterType<RawBody>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "RawBody");
+    qmlRegisterType<QueryString>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "QueryString");
+    qmlRegisterUncreatableType<ObjectData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ObjectData", "Abstract class");
+    qmlRegisterUncreatableType<AbstractData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractData", "Abstract class");
 
     //response
-    qmlRegisterType<StringResponse>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringResponse");
-    qmlRegisterType<ImageResponse>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageResponse");
-    qmlRegisterType<JsonResponse>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonResponse");
-    qmlRegisterUncreatableType<AbstractResponse>("Kaj.Rest", KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractResponse", "Abstract class");
+    qmlRegisterType<StringResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringResponse");
+    qmlRegisterType<ImageResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageResponse");
+    qmlRegisterType<JsonResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonResponse");
+    qmlRegisterUncreatableType<AbstractResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractResponse", "Abstract class");
 }
 
 void KajModule::registerTypes(const char *uri)
 {
-    Q_ASSERT(QLatin1String(uri) == QLatin1String("Kaj.Rest"));
+    Q_ASSERT(QLatin1String(uri) == QLatin1String(KAJ_PACKAGE_NAME));
 
     registerTypes();
 }

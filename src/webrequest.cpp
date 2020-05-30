@@ -17,6 +17,7 @@
  *
  */
 
+#include "expiretime.h"
 #include "webrequest.h"
 #include "webrequest_p.h"
 #include "webrequestcache.h"
@@ -38,8 +39,8 @@
 
 WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
-    m_useCache(true), m_data(QVariantMap()), m_includeDataInCacheId(false),
-    m_actualCacheId(QString()), m_expirationSeconds(0),
+    m_useCache(true), m_includeDataInCacheId(false),
+    m_expirationSeconds(0),
     useUtf8(true),
     data(nullptr), response(nullptr)
 {
@@ -50,6 +51,7 @@ WebRequest::WebRequest(QObject *parent)
 {
     setManager(WebRequestManager::instance());
     setCacheManager(WebRequestCache::instance());
+    d->expireTime = new ExpireTime(this);
 }
 
 WebRequest::~WebRequest()
@@ -59,33 +61,22 @@ WebRequest::~WebRequest()
             manager()->removeCall(this);
 }
 
-void WebRequest::sendToServer(QVariantMap props, bool cache)
+void WebRequest::sendToServer(bool cache)
 {
     if (!d->response) {
         qWarning() << "No response defined!";
         return;
     }
-//    QByteArray postData = "";
-//    QUrlQuery queryData;
-//    beforeSend(props);
-//    if (props.count()) {
-//        foreach (auto key, props.keys()) {
-//            if (postData != "")
-//                postData.append("&");
 
-//            queryData.addQueryItem(key, props.value(key).toString());
-//            postData.append(key + "=" + props.value(key).toString());
-//        }
-//    }
-//    postData = queryData.toString(QUrl::FullyEncoded).toUtf8();
+    if (d->m_useCache && cache) {
+        QString id = generateCacheId();
+        if (retriveFromCache(id)) {
+            qDebug() << "cache found";
+            setCacheUsed(true);
+            return;
+        }
+    }
 
-//    if (d->m_useCache && cache) {
-//        QString id = generateCacheId(props);
-//        if (retriveFromCache(id)) {
-//            setCacheUsed(true);
-//            return;
-//        }
-//    }
     d->calls++;
     setCacheUsed(false);
 
@@ -97,7 +88,7 @@ void WebRequest::sendToServer(QVariantMap props, bool cache)
 
     if (d->headers.count())
         for (auto i = d->headers.begin(); i != d->headers.end(); ++i)
-            request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
+            request.setRawHeader(i.key().toUtf8(), i.value());
 
     d->response->beforeSend(request);
     QNetworkReply *r;
@@ -107,106 +98,17 @@ void WebRequest::sendToServer(QVariantMap props, bool cache)
         r = manager()->request(request);
     }
     connect(r, &QNetworkReply::finished, this, &WebRequest::finished);
-
-//    return;
-
-//    if (!d->files.count())
-//        request.setHeader(QNetworkRequest::ContentTypeHeader,
-//                          "application/x-www-form-urlencoded");
-
-//    beforeSend(request);
-///*
-//    QByteArray postData = "";
-//    foreach (auto key, props.keys()) {
-//        if (postData != "")
-//            postData.append("&");
-
-//        postData.append(key + "=" + props.value(key).toString());
-//    }
-
-//    calls.insert(requestId, callBack);
-//    net->post(request, postData);
-//*/
-
-//    QNetworkReply *reply = nullptr;
-//    if (d->files.count()) {
-//        QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-//        QMap<QString, QString>::iterator i;
-//        for (i = d->files.begin(); i != d->files.end(); ++i) {
-//            QHttpPart filePart;
-//            QFile *f = new QFile(i.value());
-//            if (!f->exists())
-//                return;
-
-//            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-//            QString t = QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"")
-//                    .arg(i.key()).arg(i.value());
-//            filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-//            qDebug() << "form-data; name=\"" + i.key() + "\"";
-//            f->open(QIODevice::ReadOnly);
-//            filePart.setBodyDevice(f);
-//            multiPart->append(filePart);
-//            f->setParent(multiPart);
-//        }
-//        QMap<QString, QVariant>::iterator data_it;
-//        for (data_it = d->m_data.begin(); data_it != d->m_data.end(); ++data_it) {
-//            QHttpPart textPart;
-
-////            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-//            QString t = QString("Content-Disposition: form-data; name=\"%1\"")
-//                    .arg(data_it.key());
-//            textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-//            textPart.setBody(data_it.value().toString().toLocal8Bit());
-//            multiPart->append(textPart);
-//        }
-
-//        reply = manager()->request(request, multiPart);
-////                d->net->post(request, multiPart);
-//        multiPart->setParent(reply);
-//    } else {
-//        if (props.count()) {
-//            if (d->m_method == Get) {
-//                QUrl url = request.url();
-//                url.setQuery(postData);
-//                request.setUrl(url);
-//                //            d->net->get(request);
-//                reply = manager()->request(request);
-//            } else {
-//                //            d->net->post(request, postData);
-//                reply = manager()->request(request, postData);
-//            }
-//        } else {
-//            if (d->m_method == Get)
-//                //            d->net->get(request);
-//                reply = manager()->request(request);
-//            else
-//                //            d->net->post(request, QByteArray());
-//                reply = manager()->request(request, QByteArray());
-//        }
-//    }
-//    connect(reply, &QNetworkReply::finished, this, &WebRequest::finished);
 }
 
 void WebRequest::send(bool cache)
 {
-    if (d->m_data != QVariantMap()) {
-        sendToServer(d->m_data);
-        return;
-    }
-    QVariantMap map;
-    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
-        QMetaProperty prop = metaObject()->property(i);
-        if (!prop.isStored())
-            map.insert(prop.name(), prop.read(this));
-    }
-    sendToServer(map, cache);
+    sendToServer(cache);
 }
 
 void WebRequest::sendSync(bool cache)
 {
     QEventLoop eventLoop;
-    connect(this, &WebRequest::rawDataRecived, &eventLoop, &QEventLoop::quit);
+    connect(this, &WebRequest::finished, &eventLoop, &QEventLoop::quit);
     connect(this, &WebRequest::replyError, &eventLoop, &QEventLoop::quit);
     send(cache);
     eventLoop.exec();
@@ -277,7 +179,7 @@ bool WebRequest::useUtf8() const
     return d->useUtf8;
 }
 
-QVariantMap WebRequest::headers() const
+Rest::Headers WebRequest::headers() const
 {
     return d->headers;
 }
@@ -292,26 +194,15 @@ AbstractResponse *WebRequest::response() const
     return d->response;
 }
 
-void WebRequest::beforeSend(QVariantMap &map)
+ExpireTime *WebRequest::expireTime() const
 {
-    Q_UNUSED(map);
-}
-
-void WebRequest::beforeSend(QNetworkRequest &request)
-{
-    Q_UNUSED(request);
-}
-
-void WebRequest::processResponse(QByteArray buffer)
-{
-    rawDataRecived(buffer);
+    return d->expireTime;
 }
 
 void WebRequest::storeInCache(QDateTime expire, QByteArray &buffer)
 {
-    QString cid = cacheId();
-    if (cid.isEmpty())
-        cid = url().toString().replace("'", "");
+    QString cid = generateCacheId();
+
     if (d->response->storeCacheAsFile()) {
         buffer = cacheManager()->setValue(cid, buffer, expire).toUtf8();
     } else {
@@ -321,61 +212,37 @@ void WebRequest::storeInCache(QDateTime expire, QByteArray &buffer)
 
 bool WebRequest::retriveFromCache(const QString &key)
 {
-
-
-    if (d->useUtf8) {
-        QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-        QString cache = codec->toUnicode(cacheManager()->value(key).toUtf8());
-        if (cache != QString()) {
-            processResponse(cache.toUtf8());
+    if (d->response->storeCacheAsFile()) {
+        QString fn = cacheManager()->fileName(key);
+        if (fn != QString()) {
+            d->response->processReply(fn.toUtf8());
             return true;
         }
     } else {
         QString cache = cacheManager()->value(key);
         if (cache != QString()) {
-            processResponse(cache.toLocal8Bit());
+            d->response->processReply(cache.toLocal8Bit());
             return true;
         }
     }
+
     return false;
 }
 
-QString WebRequest::actualCacheId() const
+QString WebRequest::generateCacheId()
 {
+    if (d->m_cacheId != QString())
+        return d->m_cacheId;
 
-    return d->m_actualCacheId;
-}
-
-QString WebRequest::generateCacheId(QVariantMap props)
-{
-
-
-    QString postData = "";
-    if (props.count()) {
-        foreach (auto key, props.keys()) {
-            if (postData != "")
-                postData.append("&");
-
-            postData.append(key + "=" + props.value(key).toString());
-        }
+    if (d->m_includeDataInCacheId && d->data) {
+        return d->m_url.toString()
+                + "/" + d->data->generateCacheKey();
     }
-    if (d->m_actualCacheId == "") {
-        if (d->m_cacheId != QString()) {
-            d->m_actualCacheId = d->m_cacheId;
-        } else {
-            if (d->m_includeDataInCacheId)
-                d->m_actualCacheId = d->m_url.toString() + "?" + postData;
-            else
-                d->m_actualCacheId = d->m_url.toString();
-        }
-    }
-
-    return d->m_actualCacheId;
+    return d->m_url.toString();
 }
 
 void WebRequest::finished()
 {
-    qDebug() << Q_FUNC_INFO;
     if (!d->response)
         return;
 
@@ -399,8 +266,8 @@ void WebRequest::finished()
     if (d->m_useCache) {
         QDateTime expire = QDateTime::currentDateTime();
 
-        if (d->m_expirationSeconds) {
-            expire = expire.addSecs(d->m_expirationSeconds);
+        if (d->expireTime) {
+            expire = expire.addSecs(d->expireTime->totalSecs());
         } else {
             QString cacheControl = QString(reply->rawHeader("cache-control"));
             QRegularExpression r("max-age=(\\d+)");
@@ -409,16 +276,9 @@ void WebRequest::finished()
                 expire = expire.addSecs(m.captured(1).toInt());
             }
         }
-//        if (d->useUtf8)
-//            storeInCache(expire, buffer.toUtf8());
-//        else
         storeInCache(expire, rawBuffer);
     }
     d->response->processReply(rawBuffer);
-    if (d->useUtf8)
-        processResponse(buffer.toUtf8());
-    else
-        processResponse(rawBuffer);
 
     d->calls--;
     setIsBusy(d->calls);
@@ -451,7 +311,6 @@ void WebRequest::setCacheId(QString cacheId)
     if (d->m_cacheId == cacheId)
         return;
 
-    d->m_actualCacheId = "";
     d->m_cacheId = cacheId;
     emit cacheIdChanged(d->m_cacheId);
 }
@@ -472,7 +331,6 @@ void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
     if (d->m_includeDataInCacheId == includeDataInCacheId)
         return;
 
-    d->m_actualCacheId = "";
     d->m_includeDataInCacheId = includeDataInCacheId;
     emit includeDataInCacheIdChanged(d->m_includeDataInCacheId);
 }
@@ -527,7 +385,7 @@ void WebRequest::setUseUtf8(bool useUtf8)
     emit useUtf8Changed(d->useUtf8);
 }
 
-void WebRequest::setHeaders(QVariantMap headers)
+void WebRequest::setHeaders(Rest::Headers headers)
 {
     if (d->headers == headers)
         return;
@@ -554,6 +412,15 @@ void WebRequest::setResponse(AbstractResponse *response)
     response->setD(d);
     d->response = response;
     emit responseChanged(response);
+}
+
+void WebRequest::setExpireTime(ExpireTime *expireTime)
+{
+    if (d->expireTime == expireTime)
+        return;
+
+    d->expireTime = expireTime;
+    emit expireTimeChanged(expireTime);
 }
 
 void WebRequest::setCacheUsed(bool cacheUsed)

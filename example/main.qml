@@ -1,4 +1,5 @@
-import QtQuick 2.10
+import QtQuick
+2.10
 import QtQuick.Window 2.10
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
@@ -11,7 +12,13 @@ ApplicationWindow {
     title: qsTr("Hello World")
 
     ColumnLayout {
-        anchors.fill: parent
+        anchors{
+            topMargin: 9
+            bottomMargin: 9
+            leftMargin: 9
+            rightMargin: 9
+            fill: parent
+        }
 
         TabBar {
             id: tab
@@ -42,20 +49,19 @@ ApplicationWindow {
         }
         Text {
             text: "Is database cache enabled: " + Rest.WebRequestCacheInstance.databaseEnabled
-
         }
-
     }
 
     Pane {
         visible: Rest.WebRequestManagerInstance.loadingTexts.length > 0
         anchors.centerIn: parent
         ColumnLayout {
-            Repeater {
-                model: Rest.WebRequestManagerInstance.loadingTexts
-                Text {
-                    text: modelData
-                }
+            BusyIndicator {
+                Layout.alignment: Qt.AlignHCenter
+                running: true
+            }
+            Text {
+                text: Rest.WebRequestManagerInstance.loadingText
             }
         }
     }

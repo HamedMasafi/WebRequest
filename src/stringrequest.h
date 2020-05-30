@@ -31,9 +31,6 @@ public:
 
 signals:
     void finished(QString data);
-
-protected:
-    void processResponse(QByteArray buffer) override;
 };
 
 #endif // STRINGREQUEST_H

@@ -24,7 +24,6 @@
 
 #ifdef QT_SQL_LIB
 #   include <QtSql/QSqlDatabase>
-#   include <QtGui/QImage>
 #else
 #   include <QtCore/QCache>
 #endif
@@ -32,9 +31,8 @@
 class WebRequestCache : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(bool databaseEnabled READ databaseEnabled)
+    Q_PROPERTY(bool databaseEnabled READ databaseEnabled NOTIFY databaseEnabledChanged)
 
-    static WebRequestCache *_instance;
 #ifdef QT_SQL_LIB
     QSqlDatabase db;
 #else
@@ -63,6 +61,9 @@ public:
     void clear();
 
     bool databaseEnabled() const;
+
+signals:
+    void databaseEnabledChanged(bool databaseEnabled);
 
 protected:
     void timerEvent(QTimerEvent *);

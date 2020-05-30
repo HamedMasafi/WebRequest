@@ -33,8 +33,6 @@
 
 #define FILE_PERFIX "file-"
 
-WebRequestCache* WebRequestCache::_instance = nullptr;
-
 bool WebRequestCache::contains(const QString &key) const
 {
 #ifdef QT_SQL_LIB
@@ -131,14 +129,12 @@ void WebRequestCache::scheduleCleaninng()
 
 WebRequestCache *WebRequestCache::instance()
 {
-    if (_instance == nullptr) {
-        _instance = new WebRequestCache;
-        _instance->scheduleCleaninng();
-    }
-    return _instance;
+    static WebRequestCache *ins = new WebRequestCache;
+    ins->scheduleCleaninng();
+    return ins;
 }
 
-WebRequestCache::WebRequestCache(const QString &name)
+WebRequestCache::WebRequestCache(const QString &name) : QObject()
 {
 #ifdef QT_SQL_LIB
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -192,6 +188,7 @@ QString WebRequestCache::value(const QString &key) const
         return QString();
     }
 
+    qDebug() << "value for" << key << "is" << q.value("value");
     return q.value("value").toString();
 #else
     if (cache.contains(key))

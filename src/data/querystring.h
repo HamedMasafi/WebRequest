@@ -9,7 +9,6 @@ class QueryString : public AbstractData
 {
     Q_OBJECT
     Q_PROPERTY(QVariantMap data READ data WRITE setData NOTIFY dataChanged)
-
     QVariantMap m_data;
 
 public:
@@ -17,6 +16,7 @@ public:
 
     QVariantMap data() const;
     QNetworkReply * send(QNetworkRequest &request) override;
+    QString generateCacheKey() override;
 
 public slots:
     void setData(QVariantMap data);

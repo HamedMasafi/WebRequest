@@ -23,6 +23,7 @@
 #include <QtCore/qglobal.h>
 #include <QQmlExtensionPlugin>
 
+#define KAJ_PACKAGE_NAME "Kaj.Rest"
 #define KAJ_VERSION_MAJOR 1
 #define KAJ_VERSION_MINOR 0
 

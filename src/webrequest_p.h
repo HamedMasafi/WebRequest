@@ -29,6 +29,7 @@ class QNetworkAccessManager;
 class AbstractData;
 class AbstractResponse;
 class WebRequest;
+class ExpireTime;
 class WebRequestPrivate : public QSharedData
 {
 
@@ -40,19 +41,18 @@ public:
     bool m_isBusy;
     QString m_cacheId;
     bool m_useCache;
-    QVariantMap m_data;
     bool m_includeDataInCacheId;
-    QString m_actualCacheId;
     bool m_cacheUsed;
     qint64 m_expirationSeconds;
     QString loadingText;
     WebRequestManager *m_manager;
     WebRequestCache *m_cacheManager;
-    QMap<QString, QString> files;
+    Rest::Files files;
     bool useUtf8;
-    QVariantMap headers;
+    Rest::Headers headers;
     AbstractData *data;
     AbstractResponse *response;
+    ExpireTime* expireTime;
 };
 
 #endif // WEBREQUEST_P_H

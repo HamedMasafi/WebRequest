@@ -18,17 +18,13 @@
  */
 
 #include "jsonrequest.h"
+#include "response/jsonresponse.h"
 
 #include <QtCore/QJsonDocument>
 
 JsonObjectRequest::JsonObjectRequest(QObject *parent) : WebRequest(parent)
-{ }
-
-void JsonObjectRequest::processResponse(QByteArray buffer)
 {
-    QJsonObject obj = QJsonDocument::fromJson(buffer).object();
-    if (obj.isEmpty())
-        emit replyError(0, "");
-    else
-        emit finished(obj);
+    auto _response = new JsonResponse(this);
+    connect(_response, &JsonResponse::finished, this, &JsonObjectRequest::finished);
+    setResponse(_response);
 }

@@ -1,11 +1,11 @@
 #ifndef JSONPOSTDATA_H
 #define JSONPOSTDATA_H
 
-#include "objectdata.h"
+#include "abstractdata.h"
 
 #include <QJsonValue>
 
-class JsonPostData : public ObjectData
+class JsonPostData : public AbstractData
 {
     Q_OBJECT
     Q_PROPERTY(QJsonValue data READ data WRITE setData NOTIFY dataChanged STORED false)
@@ -15,7 +15,8 @@ class JsonPostData : public ObjectData
 public:
     JsonPostData(QObject *parent = nullptr);
     QJsonValue data() const;
-    QNetworkReply *send(QNetworkRequest &request);
+    QNetworkReply *send(QNetworkRequest &request) override;
+    QString generateCacheKey() override;
 
 public slots:
     void setData(QJsonValue data);
@@ -23,6 +24,8 @@ public slots:
 signals:
     void dataChanged(QJsonValue data);
 
+private:
+    QJsonDocument json() const;
 };
 
 #endif // JSONPOSTDATA_H

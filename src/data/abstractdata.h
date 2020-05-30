@@ -18,6 +18,7 @@ public:
 
 
     virtual QNetworkReply *send(QNetworkRequest &request) = 0;
+    virtual QString generateCacheKey() = 0;
 
 };
 
