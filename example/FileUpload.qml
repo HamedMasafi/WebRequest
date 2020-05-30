@@ -7,11 +7,16 @@ import Qt.labs.platform 1.1
 Item {
     WebRequest {
         id: service
-        url: "http://www.tipjar.com/cgi-bin/test"
+        url: "https://srv-file16.gofile.io/upload"
         loadingText: "Uploading file"
+        useCache: false
 
         data: FilePostData {
             id: postData
+            data: ({
+                       category: "file",
+                       comments: 0
+                   })
         }
 
         response: StringResponse {
@@ -23,7 +28,7 @@ Item {
     FileDialog {
         id: fileDialog
         fileMode: FileDialog.OpenFiles
-        onAccepted: postData.addFile("image", file)
+        onAccepted: postData.addFile("filesUploaded", file)
     }
 
     ColumnLayout {

@@ -38,19 +38,20 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
     QMap<QString, QString>::iterator i;
     for (i = m_files.begin(); i != m_files.end(); ++i) {
         QHttpPart filePart;
-        QFile *f = new QFile(i.value());
-        if (!f->exists())
+        QFile *f = new QFile(i.value(), multiPart);
+        if (!f->exists()) {
+            qWarning() << "The file" << i.value() << "does not exists";
             return nullptr;
+        }
 
         filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-        QString t = QString("Content-Disposition: form-data; name=\"%1\"; filename=\"%2\"")
+        QString t = QString("form-data; name=\"%1\"; filename=\"%2\"")
                 .arg(i.key()).arg(i.value());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
         qDebug() << "form-data; name=\"" + i.key() + "\"";
         f->open(QIODevice::ReadOnly);
         filePart.setBodyDevice(f);
         multiPart->append(filePart);
-        f->setParent(multiPart);
     }
     QMap<QString, QVariant>::iterator data_it;
     auto dt = data();
@@ -58,7 +59,7 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
         QHttpPart textPart;
 
         //            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-        QString t = QString("Content-Disposition: form-data; name=\"%1\"")
+        QString t = QString("form-data; name=\"%1\"")
                 .arg(data_it.key());
         textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
         textPart.setBody(data_it.value().toString().toLocal8Bit());
