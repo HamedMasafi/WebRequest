@@ -17,7 +17,6 @@
  *
  */
 
-#include "expiretime.h"
 #include "webrequest.h"
 #include "webrequest_p.h"
 #include "webrequestcache.h"
@@ -51,7 +50,7 @@ WebRequest::WebRequest(QObject *parent)
 {
     setManager(WebRequestManager::instance());
     setCacheManager(WebRequestCache::instance());
-    d->expireTime = new ExpireTime(this);
+//    d->expireTime = new ExpireTime(this);
 }
 
 WebRequest::~WebRequest()
@@ -194,11 +193,6 @@ AbstractResponse *WebRequest::response() const
     return d->response;
 }
 
-ExpireTime *WebRequest::expireTime() const
-{
-    return d->expireTime;
-}
-
 void WebRequest::storeInCache(QDateTime expire, QByteArray &buffer)
 {
     QString cid = generateCacheId();
@@ -266,8 +260,8 @@ void WebRequest::finished()
     if (d->m_useCache) {
         QDateTime expire = QDateTime::currentDateTime();
 
-        if (d->expireTime) {
-            expire = expire.addSecs(d->expireTime->totalSecs());
+        if (d->m_expirationSeconds) {
+            expire = expire.addSecs(d->m_expirationSeconds);
         } else {
             QString cacheControl = QString(reply->rawHeader("cache-control"));
             QRegularExpression r("max-age=(\\d+)");
@@ -283,6 +277,14 @@ void WebRequest::finished()
     d->calls--;
     setIsBusy(d->calls);
     manager()->removeCall(this);
+}
+
+void WebRequest::setHeader(const QString &name, const QString &value)
+{
+    if (value == QString())
+        d->headers.remove(name);
+    else
+        d->headers.insert(name, value);
 }
 
 void WebRequest::setUrl(QUrl url)
@@ -412,15 +414,6 @@ void WebRequest::setResponse(AbstractResponse *response)
     response->setD(d);
     d->response = response;
     emit responseChanged(response);
-}
-
-void WebRequest::setExpireTime(ExpireTime *expireTime)
-{
-    if (d->expireTime == expireTime)
-        return;
-
-    d->expireTime = expireTime;
-    emit expireTimeChanged(expireTime);
 }
 
 void WebRequest::setCacheUsed(bool cacheUsed)

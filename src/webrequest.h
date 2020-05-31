@@ -37,7 +37,6 @@ class WebRequestManager;
 class WebRequestCache;
 class AbstractData;
 class AbstractResponse;
-class ExpireTime;
 class WebRequest : public QObject
 {
     Q_OBJECT
@@ -45,20 +44,21 @@ class WebRequest : public QObject
     QExplicitlySharedDataPointer<WebRequestPrivate> d;
 
     Q_PROPERTY(QUrl url READ url WRITE setUrl NOTIFY urlChanged STORED false)
-    Q_PROPERTY(bool isBusy READ isBusy WRITE setIsBusy NOTIFY isBusyChanged STORED false)
     Q_PROPERTY(QString cacheId READ cacheId WRITE setCacheId NOTIFY cacheIdChanged STORED false)
     Q_PROPERTY(bool useCache READ useCache WRITE setUseCache NOTIFY useCacheChanged STORED false)
     Q_PROPERTY(bool includeDataInCacheId READ includeDataInCacheId WRITE setIncludeDataInCacheId NOTIFY includeDataInCacheIdChanged STORED false)
+    Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged STORED false)
     Q_PROPERTY(WebRequestManager* manager READ manager WRITE setManager NOTIFY managerChanged STORED false)
     Q_PROPERTY(WebRequestCache* cacheManager READ cacheManager WRITE setCacheManager NOTIFY cacheManagerChanged STORED false)
     Q_PROPERTY(AbstractData* data READ data WRITE setData NOTIFY dataChanged)
     Q_PROPERTY(AbstractResponse* response READ response WRITE setResponse NOTIFY responseChanged)
+    Q_PROPERTY(bool isBusy READ isBusy WRITE setIsBusy NOTIFY isBusyChanged STORED false)
+    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
+
+
     Q_PROPERTY(bool cacheUsed READ cacheUsed WRITE setCacheUsed NOTIFY cacheUsedChanged STORED false)
-    Q_PROPERTY(QString loadingText READ loadingText WRITE setLoadingText NOTIFY loadingTextChanged STORED false)
     Q_PROPERTY(bool useUtf8 READ useUtf8 WRITE setUseUtf8 NOTIFY useUtf8Changed STORED false)
     Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
-    Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
-    Q_PROPERTY(ExpireTime* expireTime READ expireTime WRITE setExpireTime NOTIFY expireTimeChanged)
 
 public:
     explicit WebRequest(QObject *parent = nullptr);
@@ -78,8 +78,6 @@ public:
     Rest::Headers headers() const;
     AbstractData* data() const;
     AbstractResponse *response() const;
-
-    ExpireTime* expireTime() const;
 
 protected:
     void sendToServer(bool cache = true);
@@ -106,12 +104,11 @@ signals:
     void dataChanged(AbstractData* data);
     void responseChanged(AbstractResponse *response);
 
-    void expireTimeChanged(ExpireTime* expireTime);
-
 private slots:
     void finished();
 
 public slots:
+    void setHeader(const QString &name, const QString &value);
     void send(bool cache = true);
     void sendSync(bool cache = true);
     void setUrl(QUrl url);
@@ -127,7 +124,6 @@ public slots:
     void setHeaders(Rest::Headers headers);
     void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
-    void setExpireTime(ExpireTime* expireTime);
 };
 
 #endif // WEBREQUEST_H

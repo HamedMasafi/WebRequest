@@ -52,7 +52,6 @@ public:
     Rest::Headers headers;
     AbstractData *data;
     AbstractResponse *response;
-    ExpireTime* expireTime;
 };
 
 #endif // WEBREQUEST_P_H

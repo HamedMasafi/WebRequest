@@ -17,15 +17,17 @@
  *
  */
 
+#include "global.h"
 #include "imagerequest.h"
 #include "jsonrequest.h"
 #include "module.h"
 #include "stringrequest.h"
 #include "variantrequest.h"
-#include "webrequest.h"
+#include "webrequestqml.h"
 #include "webrequestcache.h"
 #include "webrequestmanager.h"
 #include "expiretime.h"
+#include "pair.h"
 
 #include "data/abstractdata.h"
 #include "data/formpostdata.h"
@@ -61,14 +63,15 @@ void KajModule::registerTypes()
     qRegisterMetaType<WebRequestManager*>();
 
     //Web request
-    qmlRegisterType<WebRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequest");
+    qmlRegisterType<WebRequestQml>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequest");
     qmlRegisterType<StringRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringRequest");
     qmlRegisterType<JsonObjectRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonRequest");
     qmlRegisterType<VariantRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "VariantRequest");
     qmlRegisterType<ImageRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageRequest");
     qmlRegisterType<ExpireTime>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ExpireTime");
-    qmlRegisterType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCache");
+    qmlRegisterType<Rest::Header>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "Header");
     qmlRegisterType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManager");
+    qmlRegisterType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCache");
     qmlRegisterSingletonType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManagerInstance", createSingletonManager);
     qmlRegisterSingletonType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestCacheInstance", createSingletonCache);
 

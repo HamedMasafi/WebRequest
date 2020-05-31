@@ -11,6 +11,12 @@ Item {
         response: JsonResponse {
             onFinished: output.text = JSON.stringify(data)
         }
+        headers: [
+            Header {
+                name: "Some"
+                value: "Ssss"
+            }
+        ]
     }
 
     ColumnLayout {

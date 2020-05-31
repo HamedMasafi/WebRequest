@@ -12,6 +12,7 @@ SOURCES += \
    $$PWD/data/rawbody.cpp \
    $$PWD/expiretime.cpp \
    $$PWD/helper.cpp \
+   $$PWD/pair.cpp \
    $$PWD/response/abstractresponse.cpp \
    $$PWD/module.cpp \
    $$PWD/data/querystring.cpp \
@@ -27,7 +28,8 @@ SOURCES += \
    $$PWD/webrequestcache.cpp \
    $$PWD/imagerequest.cpp \
    $$PWD/jsonrequest.cpp \
-   $$PWD/webrequestmanager.cpp
+   $$PWD/webrequestmanager.cpp \
+   $$PWD/webrequestqml.cpp
 
 HEADERS += \
    $$PWD/abstracthelper.h \
@@ -37,6 +39,7 @@ HEADERS += \
    $$PWD/expiretime.h \
    $$PWD/global.h \
    $$PWD/helper.h \
+   $$PWD/pair.h \
    $$PWD/response/abstractresponse.h \
    $$PWD/module.h \
    $$PWD/data/querystring.h \
@@ -53,4 +56,5 @@ HEADERS += \
    $$PWD/webrequest.h \
    $$PWD/imagerequest.h \
    $$PWD/jsonrequest.h \
-   $$PWD/webrequestmanager.h
+   $$PWD/webrequestmanager.h \
+   $$PWD/webrequestqml.h

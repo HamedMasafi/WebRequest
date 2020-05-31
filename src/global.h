@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariantMap>
 
+class Pair;
 namespace Rest {
 
 template<class T>
@@ -14,6 +15,8 @@ using ErrorCallback = std::function<void(int, QString)>;
 using Headers = QVariantMap;
 using Files = QMap<QString, QString>;
 using Data = QMap<QString, QByteArray>;
+using Header = Pair;
 
 }
+
 #endif // GLOBAL_H
