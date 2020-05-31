@@ -88,7 +88,7 @@ void WebRequest::sendToServer(bool cache)
 
     if (d->headers.count())
         for (auto i = d->headers.begin(); i != d->headers.end(); ++i)
-            request.setRawHeader(i.key().toUtf8(), i.value().toByteArray());
+            request.setRawHeader(i.key().toUtf8(), i.value());
 
     d->response->beforeSend(request);
     QNetworkReply *r;
