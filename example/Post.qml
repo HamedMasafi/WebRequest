@@ -4,22 +4,22 @@ import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
 Item {
-    WebRequest {
-        id: service
-        url: "http://httpbin.org/post"
-        loadingText: "Posting data"
-        data: JsonPostData {
-            data: ({
-                       name: 'hamed',
-                       n: 1
-                   })
-        }
-
-        response: JsonResponse {
-            onFinished: output.text = JSON.stringify(data)
-            onError: console.log("error", descript)
-        }
+WebRequest {
+    id: service
+    url: "http://httpbin.org/post"
+    loadingText: "Posting data"
+    data: JsonPostData {
+        data: ({
+                   name: 'hamed',
+                   n: 1
+               })
     }
+
+    response: JsonResponse {
+        onFinished: output.text = JSON.stringify(data)
+        onError: console.log("error", descript)
+    }
+}
 
     ColumnLayout {
         Button {
