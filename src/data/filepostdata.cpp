@@ -55,16 +55,16 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
     }
     QMap<QString, QVariant>::iterator data_it;
     auto dt = data();
-    for (data_it = dt.begin(); data_it != dt.end(); ++data_it) {
-        QHttpPart textPart;
+//    for (data_it = dt.begin(); data_it != dt.end(); ++data_it) {
+//        QHttpPart textPart;
 
-        //            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
-        QString t = QString("form-data; name=\"%1\"")
-                .arg(data_it.key());
-        textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-        textPart.setBody(data_it.value().toString().toLocal8Bit());
-        multiPart->append(textPart);
-    }
+//        //            filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
+//        QString t = QString("form-data; name=\"%1\"")
+//                .arg(data_it.key());
+//        textPart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
+//        textPart.setBody(data_it.value().toString().toLocal8Bit());
+//        multiPart->append(textPart);
+//    }
 
 
     return d()->m_manager->request(request, multiPart);
@@ -79,10 +79,10 @@ QString FilePostData::generateCacheKey()
     for (auto i = m_files.begin(); i != m_files.end(); ++i) {
         key.append(i.key() + "&" + i.value() + ";;");
     }
-    auto dt = data();
-    for (auto data_it = dt.begin(); data_it != dt.end(); ++data_it) {
-        key.append(data_it.key() + "&" + data_it.value().toString() + ";;");
-    }
+//    auto dt = data();
+//    for (auto data_it = dt.begin(); data_it != dt.end(); ++data_it) {
+//        key.append(data_it.key() + "&" + data_it.value().toString() + ";;");
+//    }
 
     return key;
 }

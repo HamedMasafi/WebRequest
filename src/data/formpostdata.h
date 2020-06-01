@@ -4,32 +4,35 @@
 #include "abstractdata.h"
 #include "global.h"
 
+#include <QQmlListProperty>
 #include <QVariantMap>
 
+class FileItem;
 class FormPostData : public AbstractData
 {
     Q_OBJECT
-    Q_PROPERTY(QVariantMap data READ data WRITE setData NOTIFY dataChanged)
+    Q_PROPERTY(QQmlListProperty<Pair> data READ data DESIGNABLE false)
+//    Q_PROPERTY(QVariantMap data READ data WRITE setData NOTIFY dataChanged)
+    Q_CLASSINFO("DefaultProperty", "data");
 
-    QVariantMap m_data;
-    Rest::Files m_files;
-
+    QList<Pair*> m_data;
 public:
     FormPostData(QObject *parent = nullptr);
 
-    QVariantMap data() const;
-    Rest::Files files() const;
+    QQmlListProperty<Pair> data();
     QNetworkReply *send(QNetworkRequest &request) override;
     QString generateCacheKey() override;
 
 public slots:
-    void addData(const QString &name, const QVariant &value);
-    void setData(QVariantMap data);
-    void setFiles(Rest::Files files);
+    void addData2(const QString &name, const QVariant &value);
+    static void addData(QQmlListProperty<Pair> *property, Pair *pair);
+    static Pair *dataAt(QQmlListProperty<Pair> *property, int index);
+    static void clearData(QQmlListProperty<Pair> *property);
+    static int dataCount(QQmlListProperty<Pair> *property);
 
-signals:
-    void dataChanged(QVariantMap data);
-    void filesChanged(Rest::Files files);
+private:
+    void processWithFiles(QNetworkRequest &request, QList<Pair *> data, QList<FileItem*> files);
+    void processFormData(QNetworkRequest &request, QList<Pair *> data);
 };
 
 #endif // FORMPOSTDATA_H

@@ -1,3 +1,4 @@
+#include "fileitem.h"
 #include "formpostdata.h"
 
 #include <QFile>
@@ -11,42 +12,56 @@ FormPostData::FormPostData(QObject *parent) : AbstractData(parent)
 {
 
 }
-
-QVariantMap FormPostData::data() const
+void FormPostData::addData(QQmlListProperty<Pair> *property, Pair *pair)
 {
-    return m_data;
+    FormPostData *postData = qobject_cast<FormPostData*>(property->object);
+    Q_ASSERT(postData != 0);
+    pair->setParent(postData);
+
+    QList<Pair *> *list = reinterpret_cast<QList<Pair *> *>(property->data);
+    Q_ASSERT(list != 0);
+
+    list->append(pair);
+}
+Pair *FormPostData::dataAt(QQmlListProperty<Pair> *property, int index)
+{
+    FormPostData *store = qobject_cast<FormPostData*>(property->object);
+    Q_ASSERT(store != 0);
+
+    QList<Pair *> *products = reinterpret_cast<QList<Pair *> *>(property->data);
+    Q_ASSERT(products != 0);
+
+    return products->at(index);
+}
+void FormPostData::clearData(QQmlListProperty<Pair> *property)
+{
+    QList<Pair *> *list = reinterpret_cast<QList<Pair*> *>(property->data);
+    Q_ASSERT(list != 0);
+
+//    for (int i=0; i<products->size(); ++i) {
+//        Pair *product = products->at(i);
+//        product->setStore(0);
+//    }
+    list->clear();
+}
+int FormPostData::dataCount(QQmlListProperty<Pair> *property)
+{
+    QList<Pair *> *list = reinterpret_cast<QList<Pair *> *>(property->data);
+    return list->count();
 }
 
-Rest::Files FormPostData::files() const
+QNetworkReply *FormPostData::processWithFiles(QNetworkRequest &request, QList<Pair *> data, QList<FileItem *> files)
 {
-    return m_files;
+    return nullptr;
 }
 
-void FormPostData::setData(QVariantMap data)
-{
-    if (m_data == data)
-        return;
-
-    m_data = data;
-    emit dataChanged(m_data);
-}
-
-void FormPostData::setFiles(Rest::Files files)
-{
-    if (m_files == files)
-        return;
-
-    m_files = files;
-    emit filesChanged(m_files);
-}
-
-QNetworkReply *FormPostData::send(QNetworkRequest &request)
+QNetworkReply *FormPostData::processFormData(QNetworkRequest &request, QList<Pair*> data)
 {
     QUrlQuery queryData;
 
-    if (m_data.count())
-        foreach (auto key, m_data.keys())
-            queryData.addQueryItem(key, m_data.value(key).toString());
+    if (data.count())
+        foreach (auto dt, data)
+            queryData.addQueryItem(dt->name(), dt->value());
 
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
         QMetaProperty prop = metaObject()->property(i);
@@ -59,13 +74,54 @@ QNetworkReply *FormPostData::send(QNetworkRequest &request)
     return d()->m_manager->request(request, body);
 }
 
+QQmlListProperty<Pair> FormPostData::data()
+{
+    return {this, &m_data,
+        &FormPostData::addData,
+        &FormPostData::dataCount,
+        &FormPostData::dataAt,
+        &FormPostData::clearData};
+            /*QQmlListProperty<Pair>(this,
+                                  &m_data,
+                                  &addData,
+                                  &dataCount,
+                                  &dataAt,
+                                  &clearData);*/
+
+}
+
+
+QNetworkReply *FormPostData::send(QNetworkRequest &request)
+{
+    QUrlQuery queryData;
+
+    QList<FileItem*> files;
+    QList<Pair*> data;
+    for (auto i = m_data.begin(); i != m_data.end(); ++i) {
+        auto fi = qobject_cast<FileItem*>(*i);
+        if (fi)
+            files.append(fi);
+        else
+            data.append(*i);
+    }
+
+    if (files.count())
+        return processWithFiles(request, data, files);
+    else
+        return processFormData(request, data);
+}
+
 QString FormPostData::generateCacheKey()
 {
     QUrlQuery queryData;
 
-    if (m_data.count())
-        foreach (auto key, m_data.keys())
-            queryData.addQueryItem(key, m_data.value(key).toString());
+    for (auto i = m_data.begin(); i != m_data.end(); ++i) {
+        auto fi = qobject_cast<FileItem*>(*i);
+        if (fi)
+            queryData.addQueryItem(fi->name(), fi->source().toString());
+        else
+            queryData.addQueryItem((*i)->name(), (*i)->value());
+    }
 
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
         QMetaProperty prop = metaObject()->property(i);
@@ -76,7 +132,7 @@ QString FormPostData::generateCacheKey()
     return queryData.toString(QUrl::FullyEncoded);
 }
 
-void FormPostData::addData(const QString &name, const QVariant &value)
+void FormPostData::addData2(const QString &name, const QVariant &value)
 {
-    m_data.insert(name, value);
+//    m_data.insert(name, value);
 }

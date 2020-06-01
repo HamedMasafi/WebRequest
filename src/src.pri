@@ -10,6 +10,7 @@ SOURCES += \
    $$PWD/data/abstractdata.cpp \
    $$PWD/data/objectdata.cpp \
    $$PWD/data/rawbody.cpp \
+   $$PWD/data/fileitem.cpp \
    $$PWD/expiretime.cpp \
    $$PWD/helper.cpp \
    $$PWD/pair.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
    $$PWD/data/abstractdata.h \
    $$PWD/data/objectdata.h \
    $$PWD/data/rawbody.h \
+   $$PWD/data/fileitem.h \
    $$PWD/expiretime.h \
    $$PWD/global.h \
    $$PWD/helper.h \

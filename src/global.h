@@ -16,6 +16,7 @@ using Headers = QVariantMap;
 using Files = QMap<QString, QString>;
 using Data = QMap<QString, QByteArray>;
 using Header = Pair;
+using FormData = Pair;
 
 }
 

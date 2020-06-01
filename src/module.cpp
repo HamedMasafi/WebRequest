@@ -36,6 +36,7 @@
 #include "data/querystring.h"
 #include "data/rawbody.h"
 #include "data/objectdata.h"
+#include "data/fileitem.h"
 
 #include "response/abstractresponse.h"
 #include "response/stringresponse.h"
@@ -70,6 +71,8 @@ void KajModule::registerTypes()
     qmlRegisterType<ImageRequest>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageRequest");
     qmlRegisterType<ExpireTime>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ExpireTime");
     qmlRegisterType<Rest::Header>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "Header");
+    qmlRegisterType<FileItem>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FileItem");
+    qmlRegisterType<Rest::FormData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FormData");
     qmlRegisterType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManager");
     qmlRegisterType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "WebRequestCache");
     qmlRegisterSingletonType<WebRequestManager>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestManagerInstance", createSingletonManager);
