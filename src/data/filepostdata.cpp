@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QNetworkRequest>
+#include <QFileInfo>
 
 #include "../webrequestmanager.h"
 #include "../webrequest_p.h"
@@ -45,10 +46,11 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
         }
 
         filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
+        QFileInfo fi(i.value());
         QString t = QString("form-data; name=\"%1\"; filename=\"%2\"")
-                .arg(i.key()).arg(i.value());
+                .arg(i.key()).arg(fi.fileName());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-        qDebug() << "form-data; name=\"" + i.key() + "\"";
+        qDebug() << t;
         f->open(QIODevice::ReadOnly);
         filePart.setBodyDevice(f);
         multiPart->append(filePart);
