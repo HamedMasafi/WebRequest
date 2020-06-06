@@ -17,7 +17,10 @@ bool AbstractResponse::storeCacheAsFile() const
 
 QString AbstractResponse::header(const QString &headerName) const
 {
-    return _headers.value(headerName);
+    for (auto i = _headers.begin(); i != _headers.end(); ++i)
+        if (!i.key().compare(headerName, Qt::CaseInsensitive))
+            return i.value();
+    return QString();
 }
 
 void AbstractResponse::setHeader(const QString &name, const QByteArray &value)
