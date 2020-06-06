@@ -8,6 +8,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMetaProperty>
+#include <QDebug>
 
 JsonPostData::JsonPostData(QObject *parent) : AbstractData(parent)
 {
@@ -57,6 +58,7 @@ QNetworkReply *JsonPostData::send(QNetworkRequest &request)
     QByteArray body;
     body = json().toJson(QJsonDocument::Compact);
 
+    qDebug() << body;
     return d()->m_manager->request(request, body);
 }
 

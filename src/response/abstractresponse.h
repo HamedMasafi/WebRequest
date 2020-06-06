@@ -7,6 +7,8 @@
 class AbstractResponse : public AbstractHelper
 {
     Q_OBJECT
+    QMap<QString, QByteArray> _headers;
+
 public:
     explicit AbstractResponse(QObject *parent = nullptr);
     virtual void beforeSend(QNetworkRequest &request);
@@ -15,6 +17,13 @@ public:
 
 signals:
     void error(const int &code, const QString &descript);
+
+public slots:
+    QString header(const QString &headerName) const;
+
+private:
+    void setHeader(const QString &name, const QByteArray &value);
+    friend class WebRequest;
 };
 
 #endif // ABSTRACTRESPONSE_H

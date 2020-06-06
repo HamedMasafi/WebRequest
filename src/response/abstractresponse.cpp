@@ -14,3 +14,13 @@ bool AbstractResponse::storeCacheAsFile() const
 {
     return false;
 }
+
+QString AbstractResponse::header(const QString &headerName) const
+{
+    return _headers.value(headerName);
+}
+
+void AbstractResponse::setHeader(const QString &name, const QByteArray &value)
+{
+    _headers.insert(name, value);
+}

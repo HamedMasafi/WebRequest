@@ -277,7 +277,10 @@ void WebRequest::finished()
             }
         }
         storeInCache(expire, rawBuffer);
-    }
+    }auto headers = reply->rawHeaderList();
+    foreach (auto h, headers)
+        d->response->setHeader(h, reply->rawHeader(h));
+
     d->response->processReply(rawBuffer);
 
     d->calls--;
