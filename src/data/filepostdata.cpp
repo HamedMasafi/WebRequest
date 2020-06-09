@@ -68,7 +68,7 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
         multiPart->append(textPart);
     }
 
-
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     return d()->m_manager->request(request, multiPart);
 }
 

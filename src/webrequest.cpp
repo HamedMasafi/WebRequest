@@ -251,6 +251,11 @@ void WebRequest::finished()
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     auto rawBuffer = reply->readAll();
 
+    auto headers = reply->rawHeaderList();
+    foreach (auto h, headers) {
+        d->response->setHeader(h, reply->rawHeader(h));
+        qDebug() << "Header set:" << h << ":"<<reply->rawHeader(h);
+    }
 
     auto buffer = codec->toUnicode(rawBuffer);
 
@@ -277,9 +282,7 @@ void WebRequest::finished()
             }
         }
         storeInCache(expire, rawBuffer);
-    }auto headers = reply->rawHeaderList();
-    foreach (auto h, headers)
-        d->response->setHeader(h, reply->rawHeader(h));
+    }
 
     d->response->processReply(rawBuffer);
 

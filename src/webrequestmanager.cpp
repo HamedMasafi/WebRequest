@@ -89,7 +89,7 @@ QNetworkReply *WebRequestManager::request(const QNetworkRequest &request, QByteA
 
 QNetworkReply *WebRequestManager::request(const QNetworkRequest &request, QHttpMultiPart *multipart)
 {
-    return d->networdAccessManager->post(request, multipart);
+    return d->networdAccessManager->sendCustomRequest(request, "PATCH", multipart);
 }
 
 QString WebRequestManager::loadingText() const
