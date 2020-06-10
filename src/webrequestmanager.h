@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -21,6 +21,7 @@
 #define WEBREQUESTMANAGER_H
 
 #include "webrequestmanager_p.h"
+#include "global.h"
 
 #include <QMutex>
 #include <QObject>
@@ -29,6 +30,8 @@
 class QNetworkReply;
 class QHttpMultiPart;
 class QNetworkRequest;
+
+KAJ_REST_BEGIN_NAMESPACE
 
 class WebRequest;
 class WebRequestManager : public QObject {
@@ -79,5 +82,7 @@ signals:
     void loadingTextChanged(QString loadingText);
     void sepratorChanged(QString seprator);
 };
+
+KAJ_REST_END_NAMESPACE
 
 #endif // WEBREQUESTMANAGER_H

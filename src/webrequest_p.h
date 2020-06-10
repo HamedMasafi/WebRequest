@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -25,6 +25,8 @@
 #include <QSharedData>
 
 class QNetworkAccessManager;
+
+KAJ_REST_BEGIN_NAMESPACE
 
 class AbstractData;
 class AbstractResponse;
@@ -53,6 +55,9 @@ public:
     AbstractData *data;
     AbstractResponse *response;
     ExpireTime* expireTime;
+    WebRequest::Method method;
 };
+
+KAJ_REST_END_NAMESPACE
 
 #endif // WEBREQUEST_P_H

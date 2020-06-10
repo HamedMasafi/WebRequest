@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -21,12 +21,15 @@
 #define WEBREQUESTCACHE_H
 
 #include <QObject>
+#include "global.h"
 
 #ifdef QT_SQL_LIB
 #   include <QtSql/QSqlDatabase>
 #else
 #   include <QtCore/QCache>
 #endif
+
+KAJ_REST_BEGIN_NAMESPACE
 
 class WebRequestCache : public QObject {
     Q_OBJECT
@@ -68,5 +71,7 @@ signals:
 protected:
     void timerEvent(QTimerEvent *);
 };
+
+KAJ_REST_END_NAMESPACE
 
 #endif // WEBREQUESTCACHE_H

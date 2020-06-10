@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -44,6 +44,8 @@
 #include <QDebug>
 #include <QJSEngine>
 
+using namespace Kaj::Rest;
+
 static QObject *createSingletonManager(QQmlEngine *, QJSEngine *)
 {
     return WebRequestManager::instance();
@@ -55,7 +57,7 @@ static QObject *createSingletonCache(QQmlEngine *, QJSEngine *)
 }
 
 
-void KajModule::registerTypes()
+void KajRestModule::registerTypes()
 {
     qRegisterMetaType<WebRequestCache*>();
     qRegisterMetaType<WebRequestManager*>();
@@ -88,14 +90,14 @@ void KajModule::registerTypes()
     qmlRegisterUncreatableType<AbstractResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractResponse", "Abstract class");
 }
 
-void KajModule::registerTypes(const char *uri)
+void KajRestModule::registerTypes(const char *uri)
 {
     Q_ASSERT(QLatin1String(uri) == QLatin1String(KAJ_PACKAGE_NAME));
 
     registerTypes();
 }
 
-void KajModule::initializeEngine(QQmlEngine *engine, const char *uri)
+void KajRestModule::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     Q_UNUSED(uri);
     Q_UNUSED(engine);

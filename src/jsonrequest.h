@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -24,6 +24,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QJsonObject>
 
+KAJ_REST_BEGIN_NAMESPACE
+
 class JsonObjectRequest : public WebRequest
 {
     Q_OBJECT
@@ -33,5 +35,7 @@ public:
 signals:
     void finished(QJsonValue data);
 };
+
+KAJ_REST_END_NAMESPACE
 
 #endif // JSONREQUEST_H

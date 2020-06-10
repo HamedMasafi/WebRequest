@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -27,6 +27,8 @@
 #include <QtCore/QDebug>
 
 #include <QNetworkRequest>
+
+KAJ_REST_BEGIN_NAMESPACE
 
 ImageRequest::ImageRequest(QObject *parent) : WebRequest(parent)
 {
@@ -49,3 +51,5 @@ void ImageRequest::setFileName(QUrl fileName)
     m_fileName = fileName;
     emit fileNameChanged(m_fileName);
 }
+
+KAJ_REST_END_NAMESPACE

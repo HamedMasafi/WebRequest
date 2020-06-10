@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -22,6 +22,8 @@
 #include "webrequestmanager_p.h"
 #include <QDebug>
 #include <QNetworkAccessManager>
+
+KAJ_REST_BEGIN_NAMESPACE
 
 WebRequestManagerPrivate::WebRequestManagerPrivate(WebRequestManager *parent)
     : networdAccessManager(new QNetworkAccessManager(parent))
@@ -119,3 +121,5 @@ void WebRequestManager::setSeprator(QString seprator)
     d->seprator = seprator;
     emit sepratorChanged(seprator);
 }
+
+KAJ_REST_END_NAMESPACE

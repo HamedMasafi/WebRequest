@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -20,9 +20,13 @@
 #include "stringrequest.h"
 #include "response/stringresponse.h"
 
+KAJ_REST_BEGIN_NAMESPACE
+
 StringRequest::StringRequest(QObject *parent) : WebRequest(parent)
 {
     auto _response = new StringResponse(this);
     connect(_response, &StringResponse::finished, this, &StringRequest::finished);
     setResponse(_response);
 }
+
+KAJ_REST_END_NAMESPACE

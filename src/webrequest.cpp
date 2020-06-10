@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -37,12 +37,14 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
+KAJ_REST_BEGIN_NAMESPACE
+
 WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
     m_useCache(true), m_includeDataInCacheId(false),
     m_expirationSeconds(0),
     useUtf8(true),
-    data(nullptr), response(nullptr)
+    data(nullptr), response(nullptr), method(WebRequest::Auto)
 {
 }
 
@@ -92,10 +94,29 @@ void WebRequest::sendToServer(bool cache)
 
     d->response->beforeSend(request);
     QNetworkReply *r;
-    if (d->data) {
-        r = d->data->send(request);
-    } else {
+
+    switch (d->method) {
+    case Auto:
+        if (d->data)
+            r = d->data->send(request);
+        else
+            r = manager()->request(request);
+        break;
+
+    case Get:
+        if (d->data)
+            qDebug() << "Data is set for WebRequest but method is set to get. Data will be ignored";
         r = manager()->request(request);
+        break;
+
+    case Post:
+        if (d->data) {
+            r = d->data->send(request);
+        } else {
+            r = manager()->request(request, QByteArray());
+            qDebug() << "Data is not set for WebRequest but method is set to post. Empty QByteArray will be used";
+        }
+        break;
     }
     connect(r, &QNetworkReply::finished, this, &WebRequest::finished);
 }
@@ -197,6 +218,11 @@ AbstractResponse *WebRequest::response() const
 ExpireTime *WebRequest::expireTime() const
 {
     return d->expireTime;
+}
+
+WebRequest::Method WebRequest::method() const
+{
+    return d->method;
 }
 
 void WebRequest::storeInCache(QDateTime expire, QByteArray &buffer)
@@ -429,6 +455,15 @@ void WebRequest::setExpireTime(ExpireTime *expireTime)
     emit expireTimeChanged(expireTime);
 }
 
+void WebRequest::setMethod(WebRequest::Method method)
+{
+    if (d->method == method)
+        return;
+
+    d->method = method;
+    emit methodChanged(method);
+}
+
 void WebRequest::setCacheUsed(bool cacheUsed)
 {
 
@@ -438,3 +473,5 @@ void WebRequest::setCacheUsed(bool cacheUsed)
     d->m_cacheUsed = cacheUsed;
     emit cacheUsedChanged(cacheUsed);
 }
+
+KAJ_REST_END_NAMESPACE

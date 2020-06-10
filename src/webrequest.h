@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * libcalendars is distributed in the hope that it will be useful,
+ * Kaj is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -31,6 +31,8 @@
 
 class QNetworkRequest;
 class QNetworkReply;
+
+KAJ_REST_BEGIN_NAMESPACE
 
 class WebRequestPrivate;
 class WebRequestManager;
@@ -59,8 +61,16 @@ class WebRequest : public QObject
     Q_PROPERTY(QVariantMap headers READ headers WRITE setHeaders NOTIFY headersChanged STORED false)
     Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
     Q_PROPERTY(ExpireTime* expireTime READ expireTime WRITE setExpireTime NOTIFY expireTimeChanged)
+    Q_PROPERTY(Method method READ method WRITE setMethod NOTIFY methodChanged)
 
 public:
+    enum Method {
+        Auto,
+        Get,
+        Post
+    };
+    Q_ENUMS(Method);
+
     explicit WebRequest(QObject *parent = nullptr);
     ~WebRequest();
 
@@ -80,6 +90,8 @@ public:
     AbstractResponse *response() const;
 
     ExpireTime* expireTime() const;
+
+    Method method() const;
 
 protected:
     void sendToServer(bool cache = true);
@@ -108,6 +120,8 @@ signals:
 
     void expireTimeChanged(ExpireTime* expireTime);
 
+    void methodChanged(Method method);
+
 private slots:
     void finished();
 
@@ -128,6 +142,9 @@ public slots:
     void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
     void setExpireTime(ExpireTime* expireTime);
+    void setMethod(Method method);
 };
+
+KAJ_REST_END_NAMESPACE
 
 #endif // WEBREQUEST_H
