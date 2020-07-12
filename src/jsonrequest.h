@@ -26,14 +26,25 @@
 
 KAJ_REST_BEGIN_NAMESPACE
 
+class JsonPostData;
 class JsonObjectRequest : public WebRequest
 {
     Q_OBJECT
+    Q_PROPERTY(QJsonValue data READ data WRITE setData NOTIFY dataChanged)
+
+    JsonPostData *_jsonData;
+
 public:
     explicit JsonObjectRequest(QObject *parent = nullptr);
 
+QJsonValue data() const;
+
+public slots:
+void setData(QJsonValue data);
+
 signals:
-    void finished(QJsonValue data);
+void finished(QJsonValue data);
+void dataChanged(QJsonValue data);
 };
 
 KAJ_REST_END_NAMESPACE

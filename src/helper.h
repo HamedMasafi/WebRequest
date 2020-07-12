@@ -28,6 +28,7 @@
 
 KAJ_REST_BEGIN_NAMESPACE
 
+using namespace Rest;
 class Helper : public QObject
 {
     Q_OBJECT

@@ -49,4 +49,6 @@ private:
 
 KAJ_REST_END_NAMESPACE
 
+Q_DECLARE_METATYPE(AbstractResponse*)
+
 #endif // ABSTRACTRESPONSE_H

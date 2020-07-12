@@ -19,7 +19,7 @@
 
 #include "imagerequest.h"
 #include "jsonrequest.h"
-#include "module.h"
+#include "kajrestmodule.h"
 #include "stringrequest.h"
 #include "variantrequest.h"
 #include "webrequest.h"
@@ -44,7 +44,7 @@
 #include <QDebug>
 #include <QJSEngine>
 
-using namespace Kaj::Rest;
+//using namespace Kaj::Rest;
 
 static QObject *createSingletonManager(QQmlEngine *, QJSEngine *)
 {
@@ -75,6 +75,7 @@ void KajRestModule::registerTypes()
     qmlRegisterSingletonType<WebRequestCache>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "WebRequestCacheInstance", createSingletonCache);
 
     //form data
+    qmlRegisterUncreatableType<AbstractData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "AbstractData", "Abstract type");
     qmlRegisterType<FormPostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FormPostData");
     qmlRegisterType<FilePostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "FilePostData");
     qmlRegisterType<JsonPostData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonPostData");
@@ -84,6 +85,8 @@ void KajRestModule::registerTypes()
     qmlRegisterUncreatableType<AbstractData>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MAJOR, "AbstractData", "Abstract class");
 
     //response
+    qRegisterMetaType<AbstractResponse*>();
+    qmlRegisterUncreatableType<AbstractResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "AbstractResponse", "Abstract type");
     qmlRegisterType<StringResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "StringResponse");
     qmlRegisterType<ImageResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "ImageResponse");
     qmlRegisterType<JsonResponse>(KAJ_PACKAGE_NAME, KAJ_VERSION_MAJOR, KAJ_VERSION_MINOR, "JsonResponse");

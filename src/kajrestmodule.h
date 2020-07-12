@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef KAJMODULE_H
-#define KAJMODULE_H
+#ifndef KAJRESTMODULE_H
+#define KAJRESTMODULE_H
 
 #include <QtCore/qglobal.h>
 #include <QQmlExtensionPlugin>
@@ -31,7 +31,7 @@ class QQmlEngine;
 class KajRestModule : public QQmlExtensionPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
+//    Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 
 public:
     static void registerTypes();
@@ -42,4 +42,4 @@ public:
 
 
 
-#endif // KAJMODULE_H
+#endif // KAJRESTMODULE_H

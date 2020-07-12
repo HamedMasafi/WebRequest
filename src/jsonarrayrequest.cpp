@@ -2,6 +2,8 @@
 
 #include <QtCore/QJsonDocument>
 
+KAJ_REST_BEGIN_NAMESPACE
+
 JsonRequest::JsonRequest(QObject *parent) : WebRequest(parent)
 { }
 
@@ -13,3 +15,5 @@ void JsonRequest::processResponse(QByteArray buffer)
     else
         emit finished(obj);
 }
+
+KAJ_REST_END_NAMESPACE

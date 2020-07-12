@@ -19,6 +19,7 @@
 
 #include "jsonrequest.h"
 #include "response/jsonresponse.h"
+#include "data/jsonpostdata.h"
 
 #include <QtCore/QJsonDocument>
 
@@ -29,6 +30,23 @@ JsonObjectRequest::JsonObjectRequest(QObject *parent) : WebRequest(parent)
     auto _response = new JsonResponse(this);
     connect(_response, &JsonResponse::finished, this, &JsonObjectRequest::finished);
     setResponse(_response);
+
+    _jsonData = new JsonPostData(this);
+    WebRequest::setData(_jsonData);
+}
+
+QJsonValue JsonObjectRequest::data() const
+{
+    return _jsonData->data();
+}
+
+void JsonObjectRequest::setData(QJsonValue data)
+{
+    if (_jsonData->data() == data)
+        return;
+
+    _jsonData->setData(data);
+    emit dataChanged(data);
 }
 
 KAJ_REST_END_NAMESPACE
