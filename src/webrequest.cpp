@@ -289,6 +289,7 @@ void WebRequest::finished()
         if (d->response)
             emit d->response->error(reply->error(), reply->errorString());
 
+        qDebug() << "Error" << rawBuffer;
         emit replyError(reply->error(), reply->errorString());
         manager()->removeCall(this);
         return;
