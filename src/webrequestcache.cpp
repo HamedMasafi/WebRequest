@@ -144,7 +144,7 @@ WebRequestCache::WebRequestCache(const QString &name) : QObject()
 
     QDir d(path);
     if (!d.exists())
-        d.mkdir(path);
+        d.mkpath(path);
 
     if (name == QString())
         db.setDatabaseName(path + "/cache.dat");
@@ -154,7 +154,7 @@ WebRequestCache::WebRequestCache(const QString &name) : QObject()
     bool ok = db.open();
 
     if (!ok) {
-        qWarning() << "Unable to open database";
+        qWarning() << "Unable to open database: " << db.databaseName();
         printError();
         return;
     }
