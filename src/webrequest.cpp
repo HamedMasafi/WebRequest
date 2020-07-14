@@ -227,7 +227,7 @@ WebRequest::Method WebRequest::method() const
 
 void WebRequest::clearCache()
 {
-    d->m_cacheManager->removeValue(cacheId());
+    d->m_cacheManager->removeValue(generateCacheId());
 }
 
 void WebRequest::setHeader(const QString &name, const QByteArray &value)
