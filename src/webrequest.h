@@ -92,6 +92,8 @@ public:
     ExpireTime* expireTime() const;
 
     Method method() const;
+    Q_INVOKABLE void clearCache();
+    Q_INVOKABLE void setHeader(const QString &name, const QByteArray &value);
 
 protected:
     void sendToServer(bool cache = true);
