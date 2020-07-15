@@ -41,7 +41,6 @@ void ImageResponse::processReply(const QByteArray &buffer)
 //        cid = url().toString().replace("'", "");
 //    QString fn = d()->m_cacheManager->setValue(cid, buffer, expire);
     setFileName(QUrl::fromLocalFile(buffer));
-    qDebug() << buffer;
 }
 
 bool ImageResponse::storeCacheAsFile() const

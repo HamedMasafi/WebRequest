@@ -79,7 +79,6 @@ QNetworkReply *JsonPostData::send(QNetworkRequest &request)
     QByteArray body;
     body = json().toJson(QJsonDocument::Compact);
 
-    qDebug() << body;
     return d()->m_manager->request(request, body);
 }
 

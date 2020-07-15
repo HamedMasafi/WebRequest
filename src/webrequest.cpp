@@ -105,7 +105,7 @@ void WebRequest::sendToServer(bool cache)
 
     case Get:
         if (d->data)
-            qDebug() << "Data is set for WebRequest but method is set to get. Data will be ignored";
+            qWarning() << "Data is set for WebRequest but method is set to get. Data will be ignored";
         r = manager()->request(request);
         break;
 
@@ -114,7 +114,7 @@ void WebRequest::sendToServer(bool cache)
             r = d->data->send(request);
         } else {
             r = manager()->request(request, QByteArray());
-            qDebug() << "Data is not set for WebRequest but method is set to post. Empty QByteArray will be used";
+            qWarning() << "Data is not set for WebRequest but method is set to post. Empty QByteArray will be used";
         }
         break;
     }
@@ -288,10 +288,8 @@ void WebRequest::finished()
     auto rawBuffer = reply->readAll();
 
     auto headers = reply->rawHeaderList();
-    foreach (auto h, headers) {
+    foreach (auto h, headers)
         d->response->setHeader(h, reply->rawHeader(h));
-        qDebug() << "Header set:" << h << ":"<<reply->rawHeader(h);
-    }
 
     auto buffer = codec->toUnicode(rawBuffer);
 

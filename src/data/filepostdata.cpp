@@ -70,7 +70,6 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
         QString t = QString("form-data; name=\"%1\"; filename=\"%2\"")
                 .arg(i.key()).arg(fi.fileName());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
-        qDebug() << t;
         f->open(QIODevice::ReadOnly);
         filePart.setBodyDevice(f);
         multiPart->append(filePart);
