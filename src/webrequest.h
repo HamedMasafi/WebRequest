@@ -25,6 +25,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 
+#include <QNetworkReply>
 #include <QSharedDataPointer>
 
 #include "global.h"
@@ -126,6 +127,8 @@ signals:
 
 private slots:
     void finished();
+    void error(QNetworkReply::NetworkError);
+    void removeCall();
 
 public slots:
     void send(bool cache = true);

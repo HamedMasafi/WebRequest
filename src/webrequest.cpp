@@ -119,6 +119,7 @@ void WebRequest::sendToServer(bool cache)
         break;
     }
     connect(r, &QNetworkReply::finished, this, &WebRequest::finished);
+    connect(r, &QNetworkReply::errorOccurred, this, &WebRequest::error);
 }
 
 void WebRequest::send(bool cache)
@@ -279,8 +280,11 @@ QString WebRequest::generateCacheId()
 
 void WebRequest::finished()
 {
-    if (!d->response)
+    qDebug() << Q_FUNC_INFO << d->calls;
+    if (!d->response) {
+        removeCall();
         return;
+    }
 
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
@@ -299,7 +303,7 @@ void WebRequest::finished()
 
         qDebug() << "Error" << rawBuffer;
         emit replyError(reply->error(), reply->errorString());
-        manager()->removeCall(this);
+        removeCall();
         return;
     }
 
@@ -321,8 +325,19 @@ void WebRequest::finished()
 
     d->response->processReply(rawBuffer);
 
+    removeCall();
+}
+
+void WebRequest::error(QNetworkReply::NetworkError)
+{
+//    qDebug() << Q_FUNC_INFO;
+//    removeCall();
+}
+
+void WebRequest::removeCall()
+{
     d->calls--;
-    setIsBusy(d->calls);
+    setIsBusy(d->calls > 0);
     manager()->removeCall(this);
 }
 

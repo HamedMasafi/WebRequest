@@ -53,7 +53,9 @@ class WebRequestCache : public QObject {
 public:
     static WebRequestCache *instance();
     WebRequestCache(const QString &name = QString());
+    bool databaseEnabled() const;
 
+public slots:
     QString value(const QString &key) const;
     QString fileName(const QString &key) const;
     QString setValue(const QString &key, const QByteArray &value, const QDateTime &expire);
@@ -63,7 +65,6 @@ public:
     int clean();
     void clear();
 
-    bool databaseEnabled() const;
 
 signals:
     void databaseEnabledChanged(bool databaseEnabled);
