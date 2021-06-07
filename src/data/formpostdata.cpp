@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QUrlQuery>
+#include <QDebug>
 #include <QMetaProperty>
 #include "../webrequestmanager.h"
 #include "../webrequest_p.h"
@@ -12,6 +13,8 @@ FormPostData::FormPostData(QObject *parent) : AbstractData(parent)
 {
 
 }
+
+#ifdef QT_QML_LIB
 void FormPostData::addData(QQmlListProperty<Pair> *property, Pair *pair)
 {
     FormPostData *postData = qobject_cast<FormPostData*>(property->object);
@@ -49,6 +52,7 @@ int FormPostData::dataCount(QQmlListProperty<Pair> *property)
     QList<Pair *> *list = reinterpret_cast<QList<Pair *> *>(property->data);
     return list->count();
 }
+#endif
 
 QNetworkReply *FormPostData::processWithFiles(QNetworkRequest &request, QList<Pair *> data, QList<FileItem *> files)
 {
@@ -58,6 +62,7 @@ QNetworkReply *FormPostData::processWithFiles(QNetworkRequest &request, QList<Pa
 QNetworkReply *FormPostData::processFormData(QNetworkRequest &request, QList<Pair*> data)
 {
     QUrlQuery queryData;
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
     if (data.count())
         foreach (auto dt, data)
@@ -70,10 +75,11 @@ QNetworkReply *FormPostData::processFormData(QNetworkRequest &request, QList<Pai
     }
 
     auto body = queryData.toString(QUrl::FullyEncoded).toUtf8();
-
+    qDebug() << "post body" << body;
     return d()->m_manager->request(request, body);
 }
 
+#ifdef QT_QML_LIB
 QQmlListProperty<Pair> FormPostData::data()
 {
     return {this, &m_data,
@@ -89,7 +95,7 @@ QQmlListProperty<Pair> FormPostData::data()
                                   &clearData);*/
 
 }
-
+#endif
 
 QNetworkReply *FormPostData::send(QNetworkRequest &request)
 {
@@ -134,5 +140,8 @@ QString FormPostData::generateCacheKey()
 
 void FormPostData::addData2(const QString &name, const QVariant &value)
 {
-//    m_data.insert(name, value);
+    auto p = new Pair;
+    p->setName(name);
+    p->setValue(value.toString());
+    m_data.append(p);
 }

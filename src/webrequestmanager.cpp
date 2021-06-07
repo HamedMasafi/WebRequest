@@ -22,6 +22,8 @@
 #include "webrequestmanager_p.h"
 #include <QDebug>
 #include <QNetworkAccessManager>
+#include <QNetworkCookie>
+#include <QNetworkCookieJar>
 
 WebRequestManagerPrivate::WebRequestManagerPrivate(WebRequestManager *parent)
     : networdAccessManager(new QNetworkAccessManager(parent))
@@ -84,6 +86,8 @@ QNetworkReply *WebRequestManager::request(const QNetworkRequest &request)
 
 QNetworkReply *WebRequestManager::request(const QNetworkRequest &request, QByteArray postData)
 {
+    qDebug() << "Cookie count for url" << request.url()
+             << " = " << d->networdAccessManager->cookieJar()->cookiesForUrl(request.url()).size();
     return d->networdAccessManager->post(request, postData);
 }
 

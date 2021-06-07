@@ -20,6 +20,7 @@ SOURCES += \
    $$PWD/data/filepostdata.cpp \
    $$PWD/data/formpostdata.cpp \
    $$PWD/data/jsonpostdata.cpp \
+   $$PWD/response/fileresponse.cpp \
    $$PWD/response/imageresponse.cpp \
    $$PWD/response/jsonresponse.cpp \
    $$PWD/response/stringresponse.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
    $$PWD/data/filepostdata.h \
    $$PWD/data/formpostdata.h \
    $$PWD/data/jsonpostdata.h \
+   $$PWD/response/fileresponse.h \
    $$PWD/response/imageresponse.h \
    $$PWD/response/jsonresponse.h \
    $$PWD/response/stringresponse.h \
