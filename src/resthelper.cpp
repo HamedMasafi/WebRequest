@@ -17,7 +17,7 @@
  *
  */
 
-#include "helper.h"
+#include "resthelper.h"
 
 #include "webrequest.h"
 

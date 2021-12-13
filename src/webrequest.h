@@ -70,7 +70,7 @@ public:
         Get,
         Post
     };
-    Q_ENUMS(Method);
+    Q_ENUM(Method);
 
     explicit WebRequest(QObject *parent = nullptr);
     ~WebRequest();

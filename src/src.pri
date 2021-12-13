@@ -11,9 +11,7 @@ SOURCES += \
    $$PWD/data/objectdata.cpp \
    $$PWD/data/rawbody.cpp \
    $$PWD/expiretime.cpp \
-   $$PWD/helper.cpp \
    $$PWD/response/abstractresponse.cpp \
-   $$PWD/module.cpp \
    $$PWD/data/querystring.cpp \
    $$PWD/data/filepostdata.cpp \
    $$PWD/data/formpostdata.cpp \
@@ -21,6 +19,7 @@ SOURCES += \
    $$PWD/response/imageresponse.cpp \
    $$PWD/response/jsonresponse.cpp \
    $$PWD/response/stringresponse.cpp \
+   $$PWD/resthelper.cpp \
    $$PWD/stringrequest.cpp \
    $$PWD/variantrequest.cpp \
    $$PWD/webrequest.cpp \
@@ -36,9 +35,7 @@ HEADERS += \
    $$PWD/data/rawbody.h \
    $$PWD/expiretime.h \
    $$PWD/global.h \
-   $$PWD/helper.h \
    $$PWD/response/abstractresponse.h \
-   $$PWD/module.h \
    $$PWD/data/querystring.h \
    $$PWD/data/filepostdata.h \
    $$PWD/data/formpostdata.h \
@@ -46,6 +43,7 @@ HEADERS += \
    $$PWD/response/imageresponse.h \
    $$PWD/response/jsonresponse.h \
    $$PWD/response/stringresponse.h \
+   $$PWD/resthelper.h \
    $$PWD/webrequestcache.h \
    $$PWD/stringrequest.h \
    $$PWD/variantrequest.h \
