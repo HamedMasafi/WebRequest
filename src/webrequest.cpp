@@ -280,7 +280,6 @@ QString WebRequest::generateCacheId()
 
 void WebRequest::finished()
 {
-    qDebug() << Q_FUNC_INFO << d->calls;
     if (!d->response) {
         removeCall();
         return;
@@ -301,7 +300,6 @@ void WebRequest::finished()
         if (d->response)
             emit d->response->error(reply->error(), reply->errorString());
 
-        qDebug() << "Error" << rawBuffer;
         emit replyError(reply->error(), reply->errorString());
         removeCall();
         return;
