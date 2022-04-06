@@ -42,7 +42,7 @@ public:
     QUrl m_url;
     bool m_isBusy;
     QString m_cacheId;
-    bool m_useCache;
+//    bool m_useCache;
     bool m_includeDataInCacheId;
     bool m_cacheUsed;
     qint64 m_expirationSeconds;
@@ -56,6 +56,7 @@ public:
     AbstractResponse *response;
     ExpireTime* expireTime;
     WebRequest::Method method;
+    WebRequest::CacheMode cacheMode;
 };
 
 KAJ_REST_END_NAMESPACE

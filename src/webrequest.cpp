@@ -41,10 +41,10 @@ KAJ_REST_BEGIN_NAMESPACE
 
 WebRequestPrivate::WebRequestPrivate() :
     calls(0), m_isBusy(false), m_cacheId(QString()),
-    m_useCache(true), m_includeDataInCacheId(false),
+    m_includeDataInCacheId(false),
     m_expirationSeconds(0),
     useUtf8(true),
-    data(nullptr), response(nullptr), method(WebRequest::Auto)
+    data(nullptr), response(nullptr), method(WebRequest::Auto), cacheMode(WebRequest::FullCache)
 {
 }
 
@@ -63,14 +63,14 @@ WebRequest::~WebRequest()
             manager()->removeCall(this);
 }
 
-void WebRequest::sendToServer(bool cache)
+void WebRequest::sendToServer()
 {
     if (!d->response) {
         qWarning() << "No response defined!";
         return;
     }
 
-    if (d->m_useCache && cache) {
+    if (d->cacheMode & Restore) {
         QString id = generateCacheId();
         if (retriveFromCache(id)) {
             qDebug() << "cache found";
@@ -122,17 +122,23 @@ void WebRequest::sendToServer(bool cache)
     connect(r, &QNetworkReply::errorOccurred, this, &WebRequest::error);
 }
 
-void WebRequest::send(bool cache)
+void WebRequest::send()
 {
-    sendToServer(cache);
+    sendToServer();
 }
 
-void WebRequest::sendSync(bool cache)
+void WebRequest::send(bool cache)
+{
+    setUseCache(cache);
+    sendToServer();
+}
+
+void WebRequest::sendSync()
 {
     QEventLoop eventLoop;
     connect(this, &WebRequest::finished, &eventLoop, &QEventLoop::quit);
     connect(this, &WebRequest::replyError, &eventLoop, &QEventLoop::quit);
-    send(cache);
+    send();
     eventLoop.exec();
 }
 
@@ -156,7 +162,7 @@ QString WebRequest::cacheId() const
 bool WebRequest::useCache() const
 {
 
-    return d->m_useCache;
+    return d->cacheMode == FullCache;
 }
 
 bool WebRequest::includeDataInCacheId() const
@@ -289,6 +295,7 @@ void WebRequest::finished()
 
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
     auto rawBuffer = reply->readAll();
+//    qDebug() << "raw buffer" << rawBuffer;
 
     auto headers = reply->rawHeaderList();
     foreach (auto h, headers)
@@ -305,7 +312,7 @@ void WebRequest::finished()
         return;
     }
 
-    if (d->m_useCache) {
+    if (d->cacheMode & Store) {
         QDateTime expire = QDateTime::currentDateTime();
 
         if (d->expireTime) {
@@ -371,12 +378,7 @@ void WebRequest::setCacheId(QString cacheId)
 
 void WebRequest::setUseCache(bool useCache)
 {
-
-    if (d->m_useCache == useCache)
-        return;
-
-    d->m_useCache = useCache;
-    emit useCacheChanged(d->m_useCache);
+    setCacheMode(useCache ? FullCache : Store);
 }
 
 void WebRequest::setIncludeDataInCacheId(bool includeDataInCacheId)
@@ -494,6 +496,19 @@ void WebRequest::setCacheUsed(bool cacheUsed)
 
     d->m_cacheUsed = cacheUsed;
     emit cacheUsedChanged(cacheUsed);
+}
+
+WebRequest::CacheMode WebRequest::cacheMode() const
+{
+    return d->cacheMode;
+}
+
+void WebRequest::setCacheMode(CacheMode newCacheMode)
+{
+    if (d->cacheMode == newCacheMode)
+        return;
+    d->cacheMode = newCacheMode;
+    emit cacheModeChanged();
 }
 
 KAJ_REST_END_NAMESPACE

@@ -35,6 +35,18 @@
 
 KAJ_REST_BEGIN_NAMESPACE
 
+
+WebRequestCache::WebRequestCache(const QString &name) : QObject(), _fileName(name)
+{
+    init();
+}
+
+void WebRequestCache::setFileName(const QString &newFileName)
+{
+    _fileName = newFileName;
+    init();
+}
+
 bool WebRequestCache::contains(const QString &key) const
 {
 #ifdef QT_SQL_LIB
@@ -134,41 +146,6 @@ WebRequestCache *WebRequestCache::instance()
     static WebRequestCache *ins = new WebRequestCache;
     ins->scheduleCleaninng();
     return ins;
-}
-
-WebRequestCache::WebRequestCache(const QString &name) : QObject()
-{
-#ifdef QT_SQL_LIB
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-
-    QDir d(path);
-    if (!d.exists())
-        d.mkpath(path);
-
-    if (name == QString())
-        db.setDatabaseName(path + "/cache.dat");
-    else
-        db.setDatabaseName(path + "/" + name + ".dat");
-
-    bool ok = db.open();
-
-    if (!ok) {
-        qWarning() << "Unable to open database: " << db.databaseName();
-        printError();
-        return;
-    }
-
-    db.exec("CREATE TABLE IF NOT EXISTS data ("
-            "id        INTEGER  PRIMARY KEY AUTOINCREMENT,"
-            "cache_key TEXT     UNIQUE NOT NULL,"
-            "value     TEXT,"
-            "expire    DATETIME NOT NULL,"
-            "has_file  BOOLEAN  NOT NULL DEFAULT (0)"
-            ")");
-
-    printError();
-#endif
 }
 
 QString WebRequestCache::value(const QString &key) const
@@ -328,6 +305,44 @@ void WebRequestCache::printError() const
 void WebRequestCache::timerEvent(QTimerEvent *)
 {
     clean();
+}
+
+void WebRequestCache::init()
+{
+#ifdef QT_SQL_LIB
+    db = QSqlDatabase::addDatabase("QSQLITE");
+
+    if (path == QString())
+        path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+
+    QDir d(path);
+    if (!d.exists())
+        d.mkpath(path);
+
+    if (_fileName == QString())
+        db.setDatabaseName(path + "/cache.dat");
+    else
+        db.setDatabaseName(path + "/" + _fileName + ".dat");
+
+    qDebug() << "WebRequestCache file is" << db.databaseName();
+    bool ok = db.open();
+
+    if (!ok) {
+        qWarning() << "Unable to open database: " << db.databaseName();
+        printError();
+        return;
+    }
+
+    db.exec("CREATE TABLE IF NOT EXISTS data ("
+            "id        INTEGER  PRIMARY KEY AUTOINCREMENT,"
+            "cache_key TEXT     UNIQUE NOT NULL,"
+            "value     TEXT,"
+            "expire    DATETIME NOT NULL,"
+            "has_file  BOOLEAN  NOT NULL DEFAULT (0)"
+            ")");
+
+    printError();
+#endif
 }
 
 KAJ_REST_END_NAMESPACE

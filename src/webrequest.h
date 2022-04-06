@@ -63,6 +63,8 @@ class WebRequest : public QObject
     Q_PROPERTY(qint64 expirationSeconds READ expirationSeconds WRITE setExpirationSeconds NOTIFY expirationSecondsChanged STORED false)
     Q_PROPERTY(ExpireTime* expireTime READ expireTime WRITE setExpireTime NOTIFY expireTimeChanged)
     Q_PROPERTY(Method method READ method WRITE setMethod NOTIFY methodChanged)
+    Q_PROPERTY(CacheMode cacheMode READ cacheMode WRITE setCacheMode NOTIFY cacheModeChanged)
+
 
 public:
     enum Method {
@@ -71,6 +73,13 @@ public:
         Post
     };
     Q_ENUM(Method);
+
+    enum CacheMode {
+        NoCache = 0,
+        Restore = 1,
+        Store = 2,
+        FullCache = Restore | Store
+    };
 
     explicit WebRequest(QObject *parent = nullptr);
     ~WebRequest();
@@ -96,8 +105,11 @@ public:
     Q_INVOKABLE void clearCache();
     Q_INVOKABLE void setHeader(const QString &name, const QByteArray &value);
 
+    CacheMode cacheMode() const;
+    void setCacheMode(CacheMode newCacheMode);
+
 protected:
-    void sendToServer(bool cache = true);
+    void sendToServer();
     virtual void storeInCache(QDateTime expire, QByteArray &buffer);
     virtual bool retriveFromCache(const QString &key);
     QString actualCacheId() const;
@@ -120,10 +132,10 @@ signals:
     void headersChanged(Rest::Headers headers);
     void dataChanged(AbstractData* data);
     void responseChanged(AbstractResponse *response);
-
     void expireTimeChanged(ExpireTime* expireTime);
+    void methodChanged(WebRequest::Method method);
 
-    void methodChanged(Method method);
+    void cacheModeChanged();
 
 private slots:
     void finished();
@@ -131,8 +143,11 @@ private slots:
     void removeCall();
 
 public slots:
-    void send(bool cache = true);
-    void sendSync(bool cache = true);
+    Q_DECL_DEPRECATED_X("Use void send()")
+    void send(bool cache);
+    void send();
+    void sendSync();
+
     void setUrl(QUrl url);
     void setIsBusy(bool isBusy);
     void setCacheId(QString cacheId);
@@ -147,7 +162,7 @@ public slots:
     void setData(AbstractData* data);
     void setResponse(AbstractResponse *response);
     void setExpireTime(ExpireTime* expireTime);
-    void setMethod(Method method);
+    void setMethod(WebRequest::Method method);
 };
 
 KAJ_REST_END_NAMESPACE

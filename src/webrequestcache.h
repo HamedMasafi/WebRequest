@@ -42,6 +42,7 @@ class WebRequestCache : public QObject {
     QCache<QString, const QString> cache;
 #endif
     QString path;
+    QString _fileName;
 
     bool contains(const QString &key) const;
     int findId(const QString &key) const;
@@ -54,10 +55,12 @@ public:
     static WebRequestCache *instance();
     WebRequestCache(const QString &name = QString());
     bool databaseEnabled() const;
-
-public slots:
     QString value(const QString &key) const;
     QString fileName(const QString &key) const;
+
+    void setFileName(const QString &newFileName);
+
+public slots:
     QString setValue(const QString &key, const QByteArray &value, const QDateTime &expire);
     bool setValue(const QString &key, const QString &value, const QDateTime &expire);
     bool removeValue(const QString &key);
@@ -65,12 +68,14 @@ public slots:
     int clean();
     void clear();
 
-
 signals:
     void databaseEnabledChanged(bool databaseEnabled);
 
 protected:
     void timerEvent(QTimerEvent *);
+
+private:
+    void init();
 };
 
 KAJ_REST_END_NAMESPACE
