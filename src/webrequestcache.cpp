@@ -47,6 +47,17 @@ void WebRequestCache::setFileName(const QString &newFileName)
     init();
 }
 
+const QString &WebRequestCache::path() const
+{
+    return _path;
+}
+
+void WebRequestCache::setPath(const QString &newPath)
+{
+    _path = newPath;
+    init();
+}
+
 bool WebRequestCache::contains(const QString &key) const
 {
 #ifdef QT_SQL_LIB
@@ -116,7 +127,7 @@ void WebRequestCache::clear()
 #ifdef QT_SQL_LIB
     db.exec("DELETE FROM data");
 
-    QStringList files = QDir(path).entryList(QStringList() << FILE_PERFIX "*");
+    QStringList files = QDir(_path).entryList(QStringList() << FILE_PERFIX "*");
     foreach (QString f, files)
         QFile::remove(f);
 #endif
@@ -133,7 +144,7 @@ bool WebRequestCache::databaseEnabled() const
 
 QString WebRequestCache::generateFileName(const int &id) const
 {
-    return path + "/" FILE_PERFIX + QString::number(id);
+    return _path + "/" FILE_PERFIX + QString::number(id);
 }
 
 void WebRequestCache::scheduleCleaninng()
@@ -310,19 +321,22 @@ void WebRequestCache::timerEvent(QTimerEvent *)
 void WebRequestCache::init()
 {
 #ifdef QT_SQL_LIB
+    if (db.isOpen())
+        db.close();
+
     db = QSqlDatabase::addDatabase("QSQLITE");
 
-    if (path == QString())
-        path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    if (_path == QString())
+        _path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 
-    QDir d(path);
+    QDir d(_path);
     if (!d.exists())
-        d.mkpath(path);
+        d.mkpath(_path);
 
     if (_fileName == QString())
-        db.setDatabaseName(path + "/cache.dat");
+        db.setDatabaseName(_path + "/cache.dat");
     else
-        db.setDatabaseName(path + "/" + _fileName + ".dat");
+        db.setDatabaseName(_path + "/" + _fileName + ".dat");
 
     qDebug() << "WebRequestCache file is" << db.databaseName();
     bool ok = db.open();

@@ -41,7 +41,7 @@ class WebRequestCache : public QObject {
 #else
     QCache<QString, const QString> cache;
 #endif
-    QString path;
+    QString _path;
     QString _fileName;
 
     bool contains(const QString &key) const;
@@ -59,6 +59,9 @@ public:
     QString fileName(const QString &key) const;
 
     void setFileName(const QString &newFileName);
+
+    const QString &path() const;
+    void setPath(const QString &newPath);
 
 public slots:
     QString setValue(const QString &key, const QByteArray &value, const QDateTime &expire);
