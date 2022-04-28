@@ -84,4 +84,5 @@ void Helper::request(const QUrl &url, QJsonValue json,
     r->send();
 }
 
+
 KAJ_REST_END_NAMESPACE

@@ -23,6 +23,7 @@ SOURCES += \
    $$PWD/stringrequest.cpp \
    $$PWD/variantrequest.cpp \
    $$PWD/webrequest.cpp \
+   $$PWD/webrequestbuilder.cpp \
    $$PWD/webrequestcache.cpp \
    $$PWD/imagerequest.cpp \
    $$PWD/jsonrequest.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
    $$PWD/response/jsonresponse.h \
    $$PWD/response/stringresponse.h \
    $$PWD/resthelper.h \
+   $$PWD/webrequestbuilder.h \
    $$PWD/webrequestcache.h \
    $$PWD/stringrequest.h \
    $$PWD/variantrequest.h \

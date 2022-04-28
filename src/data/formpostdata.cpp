@@ -65,9 +65,11 @@ QNetworkReply *FormPostData::send(QNetworkRequest &request)
 {
     QUrlQuery queryData;
 
-    if (m_data.count())
-        foreach (auto key, m_data.keys())
+    if (m_data.count()) {
+        auto keys = m_data.keys();
+        for (const auto &key : keys)
             queryData.addQueryItem(key, m_data.value(key).toString());
+    }
 
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
         QMetaProperty prop = metaObject()->property(i);
@@ -84,9 +86,11 @@ QString FormPostData::generateCacheKey()
 {
     QUrlQuery queryData;
 
-    if (m_data.count())
-        foreach (auto key, m_data.keys())
+    if (m_data.count()) {
+        auto keys = m_data.keys();
+        for (const auto &key : keys)
             queryData.addQueryItem(key, m_data.value(key).toString());
+    }
 
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); i++)  {
         QMetaProperty prop = metaObject()->property(i);

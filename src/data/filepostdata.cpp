@@ -67,8 +67,7 @@ QNetworkReply *FilePostData::send(QNetworkRequest &request)
 
         filePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("image/jpeg"));
         QFileInfo fi(i.value());
-        QString t = QString("form-data; name=\"%1\"; filename=\"%2\"")
-                .arg(i.key()).arg(fi.fileName());
+        QString t = QString("form-data; name=\"%1\"; filename=\"%2\"").arg(i.key(), fi.fileName());
         filePart.setHeader(QNetworkRequest::ContentDispositionHeader, t);
         f->open(QIODevice::ReadOnly);
         filePart.setBodyDevice(f);

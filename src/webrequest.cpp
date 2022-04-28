@@ -85,6 +85,10 @@ void WebRequest::sendToServer()
     QNetworkRequest request;
     manager()->addCall(this);
     setIsBusy(true);
+
+    QSslConfiguration conf = request.sslConfiguration();
+    conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+    request.setSslConfiguration(conf);
     request.setUrl(d->m_url);
 
 
